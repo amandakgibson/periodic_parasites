@@ -11,15 +11,9 @@ R Codes and data files associated with Gibson, Delph, Vergara and Lively 2018.
 - Bins_babies: data from experimental mesocosms; asexual frequency in offspring generation
 - Bins_adults+babies: data from experimental mesocosms; parent and offspring data combined
 
-## R Files
-- 1a_field_infprev_2012-2016.r: comparison of Microphallus infection prevalence in sexuals v. asexuals in the field from 2012-2016
-- 1b_field_infprev_2001-20015+2015-2016.r: testing shifts in relative infection prevalence of sexuals and asexuals from 2001-2005 to 2012-2016
-- 2_field_asexfreq_2001-2005+2012-2016.r: comparison of asexual frequency in 2001-2005 vs. 2012-2016
-- 3_experiment_infectivity_2012-2015.r: experimental test of parasite infectivity to local sexual and asexual hosts in 2012-2015
-- 4a_experiment_costsex_2012-2015.r: experimental test of parasite-mediated selection in 2012-2015 - comparison of asexual frequency in mesocosms with and without parasites
-- 4b_experiment_costsex_2012-2015.r: experimental test of parasite-mediated selection in 2012-2015 - estimate of cost of sex in the presence and absence of parasites
-- 5_field_asexfreq_2012-2016.r: change in asexual frequency in the field from 2012-2016
-- 6_appendix_models+calcs.r: analyses in Appendix of paper; focused on male infection rates primarily
+## RMD Files
+- Gibsonetal2018_analysis+codes_field+data.RMD: codes for analysis and graphing of all field data
+- Gibsonetal2018_analysis+codes_field_data.RMD: codes for analysis and graphing of all experimental data
 
 Authors
 Amanda K Gibson
