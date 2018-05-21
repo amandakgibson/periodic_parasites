@@ -787,7 +787,7 @@ Tfa=mean(Tf2$freq[1:36])
 Tfa_se=sd(Tf2$freq[1:36])/sqrt(36)
 
 TfbE=mean(Tf2$freq[37:54])
-TfbE_se=sd(Tf2$freq[37:72])/sqrt(18)
+TfbE_se=sd(Tf2$freq[37:54])/sqrt(18)
 
 TfbC=mean(Tf2$freq[55:72])
 TfbC_se=sd(Tf2$freq[55:72])/sqrt(18)
@@ -1769,4 +1769,217 @@ sd(LET$triploid+LET$diploid)/sqrt(length(LET$triploid))
 
 ```
 
+Experimental Results in the Appendix.Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. By year. Figure S3
+
+```{r}
+aC=subset(ba,ba$treatment==0 & ba$ploidy==3)
+aE=subset(ba,ba$treatment==1 & ba$ploidy==3)
+sC=subset(ba,ba$treatment==0 & ba$ploidy==2)
+sE=subset(ba,ba$treatment==1 & ba$ploidy==2)
+
+# now divide each subset by tank and year
+# control asexuals
+aCT=tapply(aC$mic,list(aC$year,aC$replicate),length)
+LaCT=melt(aCT)
+names(LaCT)=c("year","replicate","total")
+
+aCM=tapply(aC$mic,list(aC$year,aC$replicate),sum)
+LaCM=melt(aCM)
+names(LaCM)=c("year","replicate","mic")
+
+Ca<-cbind(LaCT,LaCM$mic)
+names(Ca)=c("year","replicate","total","mic")
+healthy=Ca$total-Ca$mic
+ploidy=rep(3,length(Ca$year))
+treatment=rep("control",length(Ca$year))
+Ca=cbind(Ca,healthy,ploidy,treatment)
+
+# exposed asexuals
+aET=tapply(aE$mic,list(aE$year,aE$replicate),length)
+LaET=melt(aET)
+names(LaET)=c("year","replicate","total")
+
+aEM=tapply(aE$mic,list(aE$year,aE$replicate),sum)
+LaEM=melt(aEM)
+names(LaEM)=c("year","replicate","mic")
+
+Ea<-cbind(LaET,LaEM$mic)
+names(Ea)=c("year","replicate","total","mic")
+healthy=Ea$total-Ea$mic
+ploidy=rep(3,length(Ea$year))
+treatment=rep("exposed",length(Ea$year))
+Ea=cbind(Ea,healthy,ploidy,treatment)
+
+# control sexuals
+sCT=tapply(sC$mic,list(sC$year,sC$replicate),length)
+LsCT=melt(sCT)
+names(LsCT)=c("year","replicate","total")
+
+sCM=tapply(sC$mic,list(sC$year,sC$replicate),sum)
+LsCM=melt(sCM)
+names(LsCM)=c("year","replicate","mic")
+
+Cs<-cbind(LsCT,LsCM$mic)
+names(Cs)=c("year","replicate","total","mic")
+healthy=Cs$total-Cs$mic
+ploidy=rep(2,length(Cs$year))
+treatment=rep("control",length(Cs$year))
+Cs=cbind(Cs,healthy,ploidy,treatment)
+
+# exposed sexuals
+sET=tapply(sE$mic,list(sE$year,sE$replicate),length)
+LsET=melt(sET)
+names(LsET)=c("year","replicate","total")
+
+sEM=tapply(sE$mic,list(sE$year,sE$replicate),sum)
+LsEM=melt(sEM)
+names(LsEM)=c("year","replicate","mic")
+
+Es<-cbind(LsET,LsEM$mic)
+names(Es)=c("year","replicate","total","mic")
+healthy=Es$total-Es$mic
+ploidy=rep(2,length(Es$year))
+treatment=rep("exposed",length(Es$year))
+Es=cbind(Es,healthy,ploidy,treatment)
+
+# now bring them all together
+inf<-rbind(Ca,Cs,Ea,Es)
+freq=inf$mic/inf$total
+inf=cbind(inf,freq)
+
+# plotting
+par(mar=c(4,4,4,4))
+par(las=1)
+par(lwd=2)
+par(col="gray20")
+boxplot(inf$freq~inf$ploidy*inf$treatment*inf$year,
+        ylim=c(0,1),ylab="", # ylab=proportion infected, with all females up in the corner
+        lwd=2,cex.axis=1.5,names=c("Sexual","Asexual","Sexual","Asexual",
+                                   "Sexual","Asexual","Sexual","Asexual",
+                                   "Sexual","Asexual","Sexual","Asexual",
+                                   "Sexual","Asexual","Sexual","Asexual"),
+        xlab="",
+        col=c("#ca0020","#0571b0"),outcex=1.5)
+abline(v=2.5,lty=3)
+abline(v=4.5)
+abline(v=6.5,lty=3)
+abline(v=8.5)
+abline(v=10.5,lty=3)
+abline(v=12.5)
+abline(v=14.5,lty=3)
+```
+
+Experimental Results in the Appendix.  Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. By year. Figure 2B
+
+```{r}
+#babies
+babb<-subset(bab,bab$cohort=="baby")
+
+aC=subset(babb,babb$treatment==0 & babb$ploidy==3)
+aE=subset(babb,babb$treatment==1 & babb$ploidy==3)
+sC=subset(babb,babb$treatment==0 & babb$ploidy==2)
+sE=subset(babb,babb$treatment==1 & babb$ploidy==2)
+
+# control triploids first
+aCT=tapply(aC$ploidy,list(aC$year,aC$replicate),length)
+LaCT=melt(aCT)
+names(LaCT)=c("year","replicate","triploid")
+
+# exposed triploids
+aET=tapply(aE$ploidy,list(aE$year,aE$replicate),length)
+LaET=melt(aET)
+names(LaET)=c("year","replicate","triploid")
+
+# control diiploids
+sCT=tapply(sC$ploidy,list(sC$year,sC$replicate),length)
+LsCT=melt(sCT)
+names(LsCT)=c("year","replicate","diploid")
+
+# exposed diploids
+sET=tapply(sE$ploidy,list(sE$year,sE$replicate),length)
+LsET=melt(sET)
+names(LsET)=c("year","replicate","diploid")
+
+#merge them
+treatment=rep("exposed",length(LaET$triploid))
+ET=cbind(LsET,LaET$triploid,treatment)
+names(ET)=c("year","replicate","diploid","triploid","treatment")
+
+treatment=rep("control",length(LaCT$triploid))
+CT=cbind(LsCT,LaCT$triploid,treatment)
+names(CT)=c("year","replicate","diploid","triploid","treatment")
+
+T=rbind(ET,CT)
+freq=T$triploid/(T$triploid+T$diploid)
+sum=T$triploid+T$diploid
+Tfbabies=cbind(T,freq,sum)
+cohort=rep("baby",length(Tfbabies$treatment))
+Tfbabies=cbind(Tfbabies,cohort)
+
+# adults
+baba<-subset(bab,bab$cohort=="adult")
+# subset by ploidy and treatment
+aC=subset(baba,baba$treatment==0 & baba$ploidy==3)
+aE=subset(baba,baba$treatment==1 & baba$ploidy==3)
+sC=subset(baba,baba$treatment==0 & baba$ploidy==2)
+sE=subset(baba,baba$treatment==1 & baba$ploidy==2)
+
+# control triploids first
+aCT=tapply(aC$ploidy,list(aC$year,aC$replicate),length)
+LaCT=melt(aCT)
+names(LaCT)=c("year","replicate","triploid")
+
+# exposed triploids
+aET=tapply(aE$ploidy,list(aE$year,aE$replicate),length)
+LaET=melt(aET)
+names(LaET)=c("year","replicate","triploid")
+
+# control diiploids
+sCT=tapply(sC$ploidy,list(sC$year,sC$replicate),length)
+LsCT=melt(sCT)
+names(LsCT)=c("year","replicate","diploid")
+
+# exposed diploids
+sET=tapply(sE$ploidy,list(sE$year,sE$replicate),length)
+LsET=melt(sET)
+names(LsET)=c("year","replicate","diploid")
+
+#merge them
+treatment=rep("exposed",length(LaET$triploid))
+ET=cbind(LsET,LaET$triploid,treatment)
+names(ET)=c("year","replicate","diploid","triploid","treatment")
+
+treatment=rep("control",length(LaCT$triploid))
+CT=cbind(LsCT,LaCT$triploid,treatment)
+names(CT)=c("year","replicate","diploid","triploid","treatment")
+
+T=rbind(ET,CT)
+freq=T$triploid/(T$triploid+T$diploid)
+sum=T$triploid+T$diploid
+Tfadults=cbind(T,freq,sum)
+cohort=rep("adult",length(Tfadults$treatment))
+Tfadults=cbind(Tfadults,cohort)
+
+Tf=rbind(Tfadults,Tfbabies)
+Tf$treatment<-factor(Tf$treatment, levels=c("control","exposed"))
+Tfadults$treatment<-factor(Tfadults$treatment, levels=c("control","exposed"))
+Tfbabies$treatment<-factor(Tfbabies$treatment, levels=c("control","exposed"))
+
+# plot
+par(las=1)
+par(lwd=2)
+par(col="gray20")
+boxplot(Tf$freq~Tf$treatment*Tf$cohort*Tf$year,
+        ylim=c(0,1),
+        lwd=2,cex.axis=1.5,names=rep(c("Control","Exposed"),8),
+        col=c("#bdbdbd","#636363"),outcex=1.5)
+abline(v=2.5,lty=3)
+abline(v=4.5,lty=1)
+abline(v=6.5,lty=3)
+abline(v=8.5,lty=1)
+abline(v=10.5,lty=3)
+abline(v=12.5,lty=1)
+abline(v=14.5,lty=3)
+
+```
 
