@@ -213,6 +213,16 @@ boxplot(longsF$value,longaF$value,
         lwd=2,cex.axis=3,cex.names=2,outcex=1.5,
         col=c("#ca0020","#0571b0")) 
 
+# 4 sites sampled per year
+# 5 years
+# snails sampled per year
+mean(Atot,na.rm=TRUE) # 19 points
+sd(Atot,na.rm=TRUE)/sqrt(19)
+
+mean(Stot,na.rm=TRUE) # 20 points
+sd(Stot,na.rm=TRUE)/sqrt(20)
+
+
 ```
 
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. GLM - variation in infection rate in the field. All sites, females - Table 1A
@@ -311,7 +321,7 @@ lr <- glm( mic ~
 
 ```
 
-Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. GLM - variation in infection rate in the field. All sites, males and females.
+Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. GLM - variation in infection rate in the field. All sites, males and females
 
 ```{r}
 lrfit <- glm(mic~site*factor(ploidy) + factor(year)*factor(ploidy) + length, family=binomial,data=dm2)
@@ -567,6 +577,16 @@ boxplot(longsF$value,longaF$value,
         lwd=2,cex.axis=3,cex.names=2,
         col=c("#ca0020","#0571b0"),outcex=1.5) 
 
+# 6 sites sampled per year
+# 5 years
+# snails sampled per year
+mean(Atot,na.rm=TRUE) # 27 points
+sd(Atot,na.rm=TRUE)/sqrt(27)
+
+mean(Stot,na.rm=TRUE) # 30 points
+sd(Stot,na.rm=TRUE)/sqrt(30)
+
+
 ```
 
 Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, females - Table 1B
@@ -594,7 +614,7 @@ summary(geefit1)
 anova(geefit1,test="LRT")
 
 geefit2<-geeglm(mic~site*factor(period) + factor(period)*factor(ploidy)+ length, data=dpsub_l, family=binomial,id=year,corstr="exchangeable")
-anova(geefit2, test="LRT")
+anova(geefit1,geefit2)
 
 geefit3<-geeglm(mic~site +factor(period)*factor(ploidy) + length, data=dpsub_l, family=binomial,id=year,corstr="exchangeable")
 anova(geefit2,geefit3) 
@@ -603,6 +623,7 @@ geefit4<-geeglm(mic~site +factor(period)+factor(ploidy) + length, data=dpsub_l, 
 anova(geefit3,geefit4) 
 
 anova(geefit3,test="LRT")
+summary(geefit3)
 ```
 
 Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Variance in infection rate
@@ -661,7 +682,7 @@ highA<-cvBootA[m*0.975]
 
 ```
 
-Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, asexual females only - Table S2A
+Paragraphs 4-5 of the Results section. Comparison of infection rates in asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, asexual females only - Table S2A
 
 ```{r}
 geefit1<-geeglm(mic~site+ factor(period) + length, data=dptrip, family=binomial,id=year,corstr="exchangeable")
@@ -671,7 +692,7 @@ summary(geefit1)
 
 ```
 
-Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, sexual females only - Table S2B
+Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual snails across both time periods. GEE - variation in infection rate in the field. All sites, sexual females only - Table S2B
 
 ```{r}
 geefit1<-geeglm(mic~site+ factor(period) + length, data=dpdip, family=binomial,id=year,corstr="exchangeable")
@@ -928,11 +949,11 @@ sumsquare/43
 
 #quasi
 lrfitq1<-glm(cbind(triploid,diploid)~ site+factor(period), family=quasibinomial,data=df.manip)
-lrfitq2<-glm(cbind(triploid,diploid)~ site, family=quasibinomial,df=df.manip)
+lrfitq2<-glm(cbind(triploid,diploid)~ site, family=quasibinomial,data=df.manip)
 anova(lrfitq1,lrfitq2,test="F")
-lrfitq3<-glm(cbind(triploid,diploid)~ period, family=quasibinomial,df=df.manip)
+lrfitq3<-glm(cbind(triploid,diploid)~ period, family=quasibinomial,data=df.manip)
 anova(lrfitq1,lrfitq3,test="F")
-lrfitq4<-glm(cbind(triploid,diploid)~+1,family=quasibinomial, df=df.manip)
+lrfitq4<-glm(cbind(triploid,diploid)~+1,family=quasibinomial, data=df.manip)
 anova(lrfitq1,lrfitq4,test="F")
 
 anova(lrfitq1, test="F")
@@ -1117,7 +1138,6 @@ p2_se<-sd(t$value[21:50]/sqrt(length(t$value[21:50])))
 Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. GLM - variation in asexual frequency in the field from 2012-2016. All sites, females. Table 3
 
 ```{r}
-
 dp2$ploidy[dp2$ploidy==2]<-0
 dp2$ploidy[dp2$ploidy==3]<-1
 
@@ -1133,9 +1153,11 @@ anova(lrfit2,lrfit,test="LRT")
 summary(lrfit)
 anova(lrfit,test="Chisq")
 
+summary(lrfit2)
+
 # pseudo-R2
 lr <- glm( ploidy~ 
-             +  1, df=df2, family = binomial,data=dp2)
+             +  1,  family = binomial,data=dp2)
 1-logLik(lrfit)/logLik(lr)
 
 # odds ratios using reduced model
@@ -1183,7 +1205,7 @@ anova(lrfit,test="Chisq")
 
 # pseudo-R2
 lr <- glm( ploidy~ 
-             +  1, df=df2, family = binomial,data=dp2sub)
+             +  1, family = binomial,data=dp2sub)
 1-logLik(lrfit)/logLik(lr)
 
 # odds ratios, reduced model
@@ -1330,7 +1352,7 @@ sd(longT$frequency)/sqrt(length(longT$frequency))
 
 ##### probability of mic infection by site
 # infected and uninfected by year/site
-# asexual
+# overall ploidy
 T<-t(tapply(dp2$mic,list(dp2$year,dp2$site),length))
 I<-t(tapply(dp2$mic,list(dp2$year,dp2$site),sum))
 F<-I/T
@@ -1354,7 +1376,7 @@ sd(longT$frequency)/sqrt(length(longT$frequency))
 # summarize by site
 # infected and uninfected by year/site
 # asexual
-asex<-subset(dp2,dp2$ploidy==3)
+asex<-subset(dp2,dp2$ploidy==1)
 aT<-t(tapply(asex$mic,list(asex$year,asex$site),length))
 aI<-t(tapply(asex$mic,list(asex$year,asex$site),sum))
 aF<-aI/aT
@@ -1383,9 +1405,6 @@ a_se<-sd(longaT$value)/sqrt(length(longaT$value))
 Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. Figure 3A
 
 ```{r}
-dp2$ploidy[dp2$ploidy==2]<-0
-dp2$ploidy[dp2$ploidy==3]<-1
-
 # sexuals and asexuals by site and year
 T<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),length))
 A<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),sum))
