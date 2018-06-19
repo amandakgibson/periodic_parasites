@@ -1,14 +1,15 @@
 ---
-title: "Gibsonetal2018_analysis+codes_field+data""
+title: "Gibsonetal2018_analysis-codes_field-data""
 author: "Amanda Gibson""
-date: "June 4 2018""
+date: "June 18 2018""
 output: pdf_document
 ---
 
 For paper Periodic, parasite-mediated selection for and against sex; Gibson, Delph, Vergara, and Lively 2018
-Packages used
 
+Packages used
 ```{r}
+# PACKAGES
 library(reshape)
 library(matrixStats)
 library(Hmisc)
@@ -19,6 +20,7 @@ options(digits=4)
 
 Data sets
 ```{r}
+# IMPORTING DATA
 # 2001-2005; females with ploidy
 dp1<-read.csv("Field-2001-2005.csv")
 dp1<-subset(dp1,dp1$sex==0 & dp1$ploidy>0)
@@ -62,9 +64,10 @@ dm<-subset(dm,length>0 & ploidy>0)
 ```
 
 Paragraph 1 of the Results section. Comparison of infection rates in asexual and sexual snails from 2001-2005. Replication of Vergara et al. 2014 Am Nat. Calculations
-
 ```{r}
 # MICROPHALLUS INFECTION RATES 2001-2005, BY REPRODUCTIVE MODE
+
+# MANIPULATIONS+CALCUATIONS
 # infected and uninfected by year+site
 # asexual snails
 asex<-subset(dp1,dp1$ploidy==3)
@@ -104,8 +107,10 @@ t1
 ```
 
 Paragraph 1 of the Results section. Comparison of infection rates in asexual and sexual snails from 2001-2005. Replication of Vergara et al. 2014 Am Nat. Figure 1A.
-
 ```{r}
+# FIGURE 1A
+
+# MANIPULATIONS+CALCUATIONS
 # asexuals
 asex<-subset(dp1,dp1$ploidy==3)
 Amic<-tapply(asex$mic,list(asex$year,asex$site),sum)
@@ -151,7 +156,7 @@ for (i in 1:5){
 l<-c(4,4,4,4,4) #no issue here with na
 Sse<-Ssd/sqrt(l)
 
-# FIGURE 1A
+# FIGURE 1A MAIN
 # done with weighted means
 par(las=1)
 par(lwd=2)
@@ -163,13 +168,13 @@ plot(Smeans,
      type="b",
      lty=1,
      pch=21,
-     col="gray10",
-     bg="#ca0020",
+   col="gray10",
+     bg="#bdbdbd",
      cex=2.5,
-     cex.axis=2.5,
-     lwd=2.5,
+     cex.axis=1,
+     lwd=2,
      xaxt="n")
-axis(1,at=c(1,2,3,4,5),labels=c("2001","2002","2003","2004","2005"),cex.axis=2.5)
+axis(1,at=c(1,2,3,4,5),labels=c("2001","2002","2003","2004","2005"),cex.axis=1)
 
 arrows(c(1,2,3,4,5),Smeans-Sse,c(1,2,3,4,5),Smeans+Sse,
        code=3,      #arrow type
@@ -183,15 +188,17 @@ arrows(c(1,2,3,4,5),Ameans-Ase,c(1,2,3,4,5),Ameans+Ase,
        lwd=2)
 lines(Ameans,
       type="b",
-      lty=5,pch=23,col="gray10",bg="#0571b0",cex=2.5,lwd=2.5)
+      lty=5,pch=23,col="gray10",bg="#525252",cex=2.5,lwd=2)
 lines(Smeans,
       type="b",
-      lty=1,pch=21,col="gray10",bg="#ca0020",cex=2.5,lwd=2.5)
+      lty=1,pch=21,col="gray10",bg="#bdbdbd",cex=2.5,lwd=2)
 
-legend(1,1.05,legend=c("sexual females","asexual females"),pch=c(21,23),pt.bg=c("#ca0020","#0571b0"),lty=c(1,5),
-       col="gray10",lwd=2.5,pt.cex=2.8,cex=2,bty="n")
+legend(1,1.05,legend=c("sexual females","asexual females"),pch=c(21,23),pt.bg=c("#bdbdbd","#525252"),lty=c(1,5),
+       col="gray10",lwd=2,pt.cex=2,cex=1,bty="n")
 
-# inset
+# FIGURE 1A INSET
+
+# MANIPULATIONS+CALCUATIONS
 # infected and uninfected by year+site
 # asexual snails
 asex<-subset(dp1,dp1$ploidy==3)
@@ -210,6 +217,7 @@ longsF<-melt(sF,id=c("year","frequency"))
 
 longsF<-na.omit(longsF)
 longaF<-na.omit(longaF)
+
 # FIGURE 1A INSET
 par(las=1)
 par(lwd=2)
@@ -217,10 +225,11 @@ par(col="gray20")
 boxplot(longsF$value,longaF$value,
         ylim=c(0,1),
         ylab="",
-        lwd=2,cex.axis=3,cex.names=2,outcex=1.5,
-        col=c("#ca0020","#0571b0"),names=c("sexual","asexual") )
+        lwd=2,cex.axis=1,cex.names=1,outcex=1.5,
+        col=c("#bdbdbd","#525252"),names=c("sexual","asexual") )
 
 # SAMPLE SIZE ESTIMATES
+
 # 4 sites sampled per year
 # 5 years
 # snails sampled per year
@@ -242,6 +251,8 @@ t2
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. GLM - variation in infection rate in the field. All sites, females - Table 1A
 
 ```{r}
+# STATISTICAL MODELS
+
 # year and site and ploidy as predictors of Microphallus infection
 # covariate length
 lrfit <- glm(mic~site*factor(ploidy) + factor(year)*factor(ploidy) + length, data=dp2, family=binomial)
@@ -250,22 +261,31 @@ lrfit <- glm(mic~site*factor(ploidy) + factor(year)*factor(ploidy) + length, dat
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/1702
 
+# testing year*ploidy interaction
 lrfit2 <- glm(mic~site*factor(ploidy) + factor(year)+factor(ploidy) + length, family=binomial,data=dp2)
 anova(lrfit2,lrfit,test="LRT")
 
+# testing site*ploidy interaction
 lrfit3 <- glm(mic~site + factor(year)+factor(ploidy) + length, family=binomial,data=dp2)
 anova(lrfit3,lrfit2,test="LRT")
+# final model- lrfit2
 
 # TABLE 1A
-summary(lrfit2)
 anova(lrfit2,test="Chisq")
+
+# coefficients
+summary(lrfit2)
 
 # pseudo-R2
 lr <- glm( mic ~ 
              +  1, family = binomial,data=dp2)
 1-logLik(lrfit2)/logLik(lr)
 
+# LINEAR CONTRASTS - comparing degree of asexual under-infection between sites 
 # site*ploidy interaction
+
+# the degree of under-infection of asexuals is greatest at halfway:
+# for halfway-camp, see summary(lrfit2) output
 # halfway - jms
 l <- cbind(0,0,0,0,0,0,0,0,0,0,0,0,1,-1,0,0,0)
 wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
@@ -282,6 +302,7 @@ wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l)
 l <- cbind(0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,-1)
 wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
 
+# other sites do not differ in the degree of under-infection (p>0.2)
 #jms-swamp
 l <- cbind(0,0,0,0,0,0,0,0,0,0,0,0,0,1,-1,0,0)
 wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
@@ -308,26 +329,30 @@ wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l)
 
 ```
 
-Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. GLM - variation in infection rate in the field. Four overlapping sites, females. Table S1A
-
+Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. GLM - variation in infection rate in the field. Four overlapping sites, females. Table B1A
 ```{r}
+# STATISTICAL MODELS
+
 lrfit <- glm(mic~site*factor(ploidy) + factor(year)*factor(ploidy) + length, family=binomial,data=dp2sub)
 
 # overdispersion 
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/1119
 
-# do we need the interaction term?
+# testing the interaction of year*ploidy
 lrfit2 <- glm(mic~site*factor(ploidy) + factor(year)+factor(ploidy) + length, family=binomial,data=dp2sub)
 anova(lrfit2,lrfit,test="LRT")
 
+# testing interaction site*ploidy
 lrfit3 <- glm(mic~site + factor(year)+factor(ploidy) + length, family=binomial,data=dp2sub)
 anova(lrfit3,lrfit2,test="LRT") 
+# final model lrfit2
 
-# TABLE S1A
-# results
-summary(lrfit2)
+# TABLE B1A
 anova(lrfit2,test="Chisq")
+
+# coefficients
+summary(lrfit2)
 
 # pseudo-R2
 lr <- glm( mic ~ 
@@ -339,20 +364,26 @@ lr <- glm( mic ~
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. GLM - variation in infection rate in the field. All sites, MALES INCLUDED
 
 ```{r}
+# STATISTICAL MODELS
+
 lrfit <- glm(mic~site*factor(ploidy) + factor(year)*factor(ploidy) + length, family=binomial,data=dm2)
 
 # overdispersion
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/2136
 
+# testing year*ploidy interaction
 lrfit2 <- glm(mic~site*factor(ploidy) + factor(year)+factor(ploidy) + length, family=binomial,data=dm2)
 anova(lrfit2,lrfit,test="LRT")
 
+# testing site*ploidy interaction
 lrfit3 <- glm(mic~site + factor(year)+factor(ploidy) + length, family=binomial,data=dm2)
 anova(lrfit3,lrfit2,test="LRT")
+# final model lrfit2
 
-summary(lrfit2)
+# MODEL NOT SHOWN IN TEXT - RESULTS MENTIONED IN APPENDIX A
 anova(lrfit2,test="Chisq")
+summary(lrfit2)
 
 # pseudo-R2
 lr <- glm( mic ~ 
@@ -361,9 +392,10 @@ lr <- glm( mic ~
 ```
 
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. Calculations. All sites, females. 
-
 ```{r}
 # MICROPHALLUS INFECTION RATES, 2012-2016, BY REPRODUCTIVE MODE
+
+# MANIPULATION AND CALCUATIONS
 # infected and uninfected by year+site
 # asexual
 asex<-subset(dp2,dp2$ploidy==3)
@@ -397,17 +429,19 @@ t3
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. Calculations. All sites, females.
 ```{r}
 # FOLD DIFFERENCE IN SEXUAL V. ASEXUAL INFECTION RATE, BY SITE
+
+# MANIPULATION AND CALCULATIONS
 names(longsF)=c("site","year","mic")
 meanS_site<-tapply(longsF$mic,c(longsF$site),mean)
 
 names(longaF)=c("site","year","mic")
 meanA_site<-tapply(longaF$mic,c(longaF$site),mean)
 
-fold=meanS_site/meanA_site
+fold=meanA_site/meanS_site
 # se of fold change
-se_fold=fold*sqrt(((se1/mean1)^2)+((se2/mean2)^2))
+se_fold=fold*sqrt(((se2/mean2)^2)+((se1/mean1)^2))
 
-# SUMMARY SEXUAL INFECTION RATE/ASEXUAL INFECTION RATE; BY SITE
+# SUMMARY ASEXUAL INFECTION RATE/SEXUAL INFECTION RATE; BY SITE
 t4<-cbind(fold,se_fold)
 rownames(t4)=c("camp","halfway","jms","swamp","swend","wpoint")
 colnames(t4)=c("sexual/asexual inf rate","se of ratio")
@@ -416,6 +450,8 @@ t4
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. Calculations. All sites, females.
 ```{r}
 # MICROPHALLUS INFECTION RATE - BY SITE
+
+# MANIPULATION AND CALCULATIONS
 #### site and year means
 # infected and uninfected by year/site
 T<-t(tapply(dp2$mic,list(dp2$year,dp2$site),length))
@@ -437,6 +473,8 @@ t
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. Calculations. All sites, females.
 ```{r}
 # MICROPHALLUS INFECTION RATE - BY YEAR
+
+# MANIPULATION AND CALCULATIONS
 year_mean<-tapply(longF$mic,list(longF$year),mean)
 year_sd<-tapply(longF$mic,list(longF$year),sd)
 year_se<-year_sd/sqrt(6)
@@ -447,10 +485,11 @@ rownames(t5)=c("2012","2013","2014","2015","2016")
 colnames(t5)=c("mean microphallus prevalence","se of mean")
 t5
 ```
-Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. Calculations. Four sites, females. 
-
+Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. Calculations. Four sites, females. Results given in Table B1A footnote
 ```{r}
-# MICROPHALLUS INFECTION RATE; 2012-2016; FOUR SITES ONLY (TABLE S1A)
+# MICROPHALLUS INFECTION RATE; 2012-2016; FOUR SITES ONLY (TABLE B1A)
+
+# MANIPULATION AND CALCULATIONS
 # infected and uninfected by year+site
 # asexual
 asex<-subset(dp2sub,dp2sub$ploidy==3)
@@ -499,8 +538,10 @@ sd(l2/l)/sqrt(30) # standard error of mean
 ```
 
 Paragraphs 2-3 of the Results section. Comparison of infection rates in sexual and asexual snails from 2012-2016. Figure1B
-
 ```{r}
+# FIGURE 1B
+
+# MANIPULATION AND CALCULATIONS
 # asexuals
 asex<-subset(dp2,dp2$ploidy==3)
 Amic<-tapply(asex$mic,list(asex$year,asex$site),sum)
@@ -544,7 +585,7 @@ for (i in 1:5){
   Ssd[i]<-sqrt(v[i])
 }
 
-#FIGURE 1B
+#FIGURE 1B MAIN
 par(las=1)
 par(lwd=2)
 par(col="gray20")
@@ -556,12 +597,12 @@ plot(Smeans,
      lty=1,
      pch=21,
      col="gray10",
-     bg="#ca0020",
+     bg="#bdbdbd",
      cex=2.5,
-     cex.axis=2.5,
-     lwd=2.5,
+     cex.axis=1,
+     lwd=2,
      xaxt="n")
-axis(1,at=c(1,2,3,4,5),labels=c("2012","2013","2014","2015","2016"),cex.axis=2.5)
+axis(1,at=c(1,2,3,4,5),labels=c("2012","2013","2014","2015","2016"),cex.axis=1)
 
 arrows(c(1,2,3,4,5),Smeans-Sse,c(1,2,3,4,5),Smeans+Sse,
        code=3,      #arrow type
@@ -575,12 +616,14 @@ arrows(c(1,2,3,4,5),Ameans-Ase,c(1,2,3,4,5),Ameans+Ase,
        lwd=2)
 lines(Ameans,
       type="b",
-      lty=5,pch=23,col="gray10",bg="#0571b0",cex=2.5,lwd=2.5)
+      lty=5,pch=23,col="gray10",bg="#525252",cex=2.5,lwd=2)
 lines(Smeans,
       type="b",
-      lty=5,pch=21,col="gray10",bg="#ca0020",cex=2.5,lwd=2.5)
+      lty=5,pch=21,col="gray10",bg="#bdbdbd",cex=2.5,lwd=2)
 
-# inset
+# FIGURE 1B INSET
+
+# MANIPULATION AND CALCULATIONS
 # infected and uninfected by year/site
 # asexual
 asex<-subset(dp2,dp2$ploidy==3)
@@ -600,15 +643,14 @@ longsF<-na.omit(longsF)
 longaF<-na.omit(longaF)
 
 #FIGURE 1B INSET
-par(mar=c(5,5,5,5))
 par(las=1)
 par(lwd=2)
 par(col="gray20")
 boxplot(longsF$value,longaF$value,
         ylim=c(0,1),
         ylab="",
-        lwd=2,cex.axis=3,cex.names=2,names=c("sexual","asexual"),
-        col=c("#ca0020","#0571b0"),outcex=1.5) 
+        lwd=2,cex.axis=1,cex.names=1,names=c("sexual","asexual"),
+        col=c("#bdbdbd","#525252"),outcex=1.5) 
 
 # SAMPLE SIZE ESTIMATES
 # 6 sites sampled per year
@@ -632,56 +674,76 @@ t7
 Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, females - Table 1B
 
 ```{r}
+# STATISTICAL MODELS
+
 geefit1<-geeglm(mic~site*factor(ploidy)+factor(period)*factor(ploidy) + length, data=dp_l, family=binomial,id=year,corstr="exchangeable")
 
+# testing site*ploidy interaction
 geefit2<-geeglm(mic~site+factor(period)*factor(ploidy) + length, data=dp_l, family=binomial,id=year,corstr="exchangeable")
 anova(geefit1,geefit2)  
 
+# testing period*ploidy interaction
 geefit3<-geeglm(mic~site+factor(period)+factor(ploidy) + length, data=dp_l, family=binomial,id=year,corstr="exchangeable")
 anova(geefit2,geefit3)
+# final model geefit2
 
-#results
-anova(geefit2,test="LRT") # TABLE 1B
+# TABLE 1B
+anova(geefit2,test="LRT") 
+
+# coefficients
 summary(geefit2)
 
 ```
 
-Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. GEE - variation in infection rate in the field. Four sites, females - Table S1B
+Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. GEE - variation in infection rate in the field. Four sites, females - Table B1B
 ```{r}
+# STATISTICAL MODELS
 geefit1<-geeglm(mic~site*factor(period) + site*factor(ploidy)+factor(period)*factor(ploidy) + length, data=dpsub_l, family=binomial,id=year,corstr="exchangeable")
 
+# testing site*ploidy interaction
 geefit2<-geeglm(mic~site*factor(period) + factor(period)*factor(ploidy)+ length, data=dpsub_l, family=binomial,id=year,corstr="exchangeable")
 anova(geefit1,geefit2)
 
+# testing site*period interaction
 geefit3<-geeglm(mic~site +factor(period)*factor(ploidy) + length, data=dpsub_l, family=binomial,id=year,corstr="exchangeable")
 anova(geefit2,geefit3) 
 
+# testing period*ploidy interaction
 geefit4<-geeglm(mic~site +factor(period)+factor(ploidy) + length, data=dpsub_l, family=binomial,id=year,corstr="exchangeable")
 anova(geefit3,geefit4) 
+# final model = geefit3
 
-# TABLE S1B
+# TABLE B1B
 anova(geefit3,test="LRT")
+
+# coefficients
 summary(geefit3)
 ```
 
-Paragraphs 4-5 of the Results section. Comparison of infection rates in asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, asexual females only - Table S2A
-
+Paragraphs 4-5 of the Results section. Comparison of infection rates in asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, asexual females only - Table B2A
 ```{r}
+# STATISTICAL MODEL
 geefit1<-geeglm(mic~site+ factor(period) + length, data=dptrip, family=binomial,id=year,corstr="exchangeable")
 
-# TABLE S2A
+# TABLE B2A
 anova(geefit1,test="LRT")
+
+# coefficients
 summary(geefit1)
 
 ```
 
-Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual snails across both time periods. GEE - variation in infection rate in the field. All sites, sexual females only - Table S2B
+Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual snails across both time periods. GEE - variation in infection rate in the field. All sites, sexual females only - Table B2B
 
 ```{r}
+# STATISTICAL MODEL
+
 geefit1<-geeglm(mic~site+ factor(period) + length, data=dpdip, family=binomial,id=year,corstr="exchangeable")
 
-# TABLE S2B
+# TABLE B2B
 anova(geefit1,test="LRT")
+
+# coefficients
 summary(geefit1)
 
 ```
@@ -689,17 +751,23 @@ summary(geefit1)
 Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. GEE - variation in infection rate in the field. All sites, females + males - MALES INCLUDED
 
 ```{r}
+# STATISTICAL MODELS
 geefit1<-geeglm(mic~site*factor(ploidy)+factor(period)*factor(ploidy) + length, data=dm, family=binomial,id=year,corstr="exchangeable")
+
+# testing site*ploidy interaction
 geefit2<-geeglm(mic~site+factor(period) * factor(ploidy) + length, data=dm, family=binomial,id=year,corstr="exchangeable")
 anova(geefit1,geefit2) 
+# final model geefit2
 
+# MODEL NOT SHOWN IN TEXT - RESULTS MENTIONED IN APPENDIX A
 anova(geefit2,test="LRT")
 
 ```
 Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Calculations
-
 ```{r}
 # MICROPHALLUS INFECTION RATE, ALL 10 YEARS - SEXUAL V ASEXUALS
+
+# MANIPULATION AND CALCULATIONS
 # all sites
 # infected and uninfected by year/site
 # asexual
@@ -731,10 +799,12 @@ rownames(t8)=c("sexual","asexual")
 t8
 
 ```
-Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Calculations
+Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Calculations - reported in Table B1B
 
 ```{r}
 # MICROPHALLUS INFECTION RATE, ALL 10 YEARS - SEXUAL V ASEXUALS
+
+# MANIPULATION AND CALCULATIONS
 # four overlapping sites
 # infected and uninfected by year/site
 # asexual
@@ -760,7 +830,7 @@ m1 = c(mean(longsF$value),mean(longaF$value))
 se1 = c((sd(longsF$value)/sqrt(length(longsF$value))),sd(longaF$value)/sqrt(length(longaF$value)))
 
 # SUMMARY MICROPHALLUS INFECTION RATE; ALL 10 YEARS BY REPRODUCTIVE MODE - FOUR OVERLAPPING SITES
-# TABLE S1B
+# TABLE B1B
 t9<-cbind(m1,se1)
 colnames(t9)=c("mean Microphallus prevalence over 10 years","se of mean")
 rownames(t9)=c("sexual","asexual")
@@ -772,6 +842,8 @@ Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual a
 
 ```{r}
 # COEFFICIENTS OF VARIATION OF MICROPHALLUS INFECTION PREVALENCE OVER ALL SAMPLING YEARS
+
+# MANIPULATION AND CALCULATIONS
 # asexual infection rates
 asex<-subset(dp,dp$ploidy==3)
 aT<-t(tapply(asex$mic,list(asex$year,asex$site),length))
@@ -830,6 +902,8 @@ Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual a
 
 ```{r}
 #OVERALL PREVALENCE OF MICROPHALLUS RATE BY TIME PERIOD
+
+# MANIPULATION AND CALCULATIONS
 T<-t(tapply(dp$mic,list(dp$year,dp$site),length))
 I<-t(tapply(dp$mic,list(dp$year,dp$site),sum))
 F<-I/T
@@ -849,10 +923,12 @@ rownames(t11)=c("2001-2005","2012-2016")
 t11
 ```
 
-Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Calculations
+Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Calculations - presented in Table B1B
 
 ```{r}
 #OVERALL PREVALENCE OF MICROPHALLUS RATE BY TIME PERIOD - FOUR OVERLAPPING SITES
+
+# MANIPULATION AND CALCULATIONS
 T<-t(tapply(dpsub$mic,list(dpsub$year,dpsub$site),length))
 I<-t(tapply(dpsub$mic,list(dpsub$year,dpsub$site),sum))
 F<-I/T
@@ -866,7 +942,7 @@ m1= c(mean(p1$value),mean(p2$value))
 se1 = c((sd(p1$value)/sqrt(length(p1$value))),sd(p2$value)/sqrt(length(p2$value)))
 
 # SUMMARY MICROPHALLUS INFECTION RATE BY TIME PERIOD; FOUR OVERLAPPING SITES
-# TABLE S1B
+# TABLE B1B
 t12<-cbind(m1,se1)
 colnames(t12)=c("overall mean Microphallus prevalence","se of mean")
 rownames(t12)=c("2001-2005","2012-2016")
@@ -874,8 +950,10 @@ t12
 ```
 
 Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Figure 1C
-
 ```{r}
+# FIGURE 1C
+
+# MANIPULATION AND CALCULATIONS
 # infected and uninfected by year/site
 # asexual
 asex<-subset(dp,dp$ploidy==3)
@@ -902,8 +980,8 @@ par(col="gray20")
 boxplot(longsF$value,longaF$value,
         ylim=c(0,1),
         ylab="",
-        lwd=2,cex.axis=1.5,cex.names=2,names=c("sexual","asexual"),
-        col=c("#ca0020","#0571b0"))
+        lwd=2,cex.axis=1,cex.names=1,names=c("sexual","asexual"),
+        col=c("#bdbdbd","#525252"))
 
 # SAMPLE SIZE ESTIMATES
 # per replicate 
@@ -933,6 +1011,9 @@ t13
 Paragraphs 4-5 of the Results section. Comparison of infection rates in sexual and asexual snails across both time periods. Figure 1D
 
 ```{r}
+# FIGURE 1D
+
+# MANIPULATION AND CALCULATIONS
 #  infected and uninfected by year
 total<-t(tapply(dp$mic,list(dp$year,dp$site),length))
 infections<-t(tapply(dp$mic,list(dp$year,dp$site),sum))
@@ -949,8 +1030,8 @@ par(col="gray30")
 boxplot(freq$value[1:20],freq$value[21:50],
         ylim=c(0,1),
         ylab="",names=c("2001-2005","2012-2016"),
-        lwd=2,cex.axis=1.5,cex.names=2,outcex=1.5,
-        col="gray60")
+        lwd=2,cex.axis=1,cex.names=1,outcex=1.5,
+        col="gray90")
 
 # SAMPLE SIZE ESTIMATES
 # per replicate - 5 years in each box, per year
@@ -974,9 +1055,10 @@ rownames(t14)=c("mean # females","se of mean","number of estimates of asexual fr
 t14
 ```
 
-Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. quasi-GLM - variation in asexual frequency in the field across periods. All sites, females - Table S3A
+Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. quasi-GLM - variation in asexual frequency in the field across periods. All sites, females - Table B3A
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
 # triploids
 dpA<-subset(dp,dp$ploidy==3)
 matrixA<-tapply(dpA$ploidy,list(dpA$year,dpA$site),length)
@@ -1011,28 +1093,25 @@ long_final<-long_final[-46,]
 long_final[is.na(long_final)] <- 0
 df.manip<-data.frame(long_final)
 
-# now the model
+# STATISTICAL MODELS
+
 lrfit <- glm(cbind(triploid,diploid)~ site+factor(period), family=binomial,data=df.manip)
 
 # overdispersion 
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/43 
 
-#quasi # TABLE S3A
-lrfitq1<-glm(cbind(triploid,diploid)~ site+factor(period), family=quasibinomial,data=df.manip)
-lrfitq2<-glm(cbind(triploid,diploid)~ site, family=quasibinomial,data=df.manip)
-anova(lrfitq1,lrfitq2,test="F")
-lrfitq3<-glm(cbind(triploid,diploid)~ period, family=quasibinomial,data=df.manip)
-anova(lrfitq1,lrfitq3,test="F")
-lrfitq4<-glm(cbind(triploid,diploid)~+1,family=quasibinomial, data=df.manip)
-anova(lrfitq1,lrfitq4,test="F")
+# TABLE B3A
+#quasi 
 
 anova(lrfitq1, test="F")
 ```
 
-Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. quasi-GLM - variation in asexual frequency in the field across periods. Four overlapping sites, females - Table S3B
+Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. quasi-GLM - variation in asexual frequency in the field across periods. Four overlapping sites, females - Table B3B
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
+
 # triploids
 dpsubA<-subset(dpsub,dpsub$ploidy==3)
 matrixA<-tapply(dpsubA$ploidy,list(dpsubA$year,dpsubA$site),length)
@@ -1055,23 +1134,25 @@ long<-cbind(period,long)
 long[is.na(long)] <- 0
 df.manip<-data.frame(long)
 
-# model
+# STATISTICAL MODELS
 lrfit <- glm(cbind(triploid,diploid)~ site*factor(period), family=binomial,data=df.manip)
 
 # overdispersion
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/32 
 
-#quasi
-# TABLE S3B
+# quasi
+# TABLE B3B
 lrfitq1<-glm(cbind(triploid,diploid)~ site*factor(period), family=quasibinomial,data=df.manip)
-summary(lrfitq1)
-anova(lrfitq1,test="F")
+
+anova(lrfitq1, test="F")
 ```
 
 Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. quasi-GLM - variation in asexual frequency in the field across periods. All sites, males + females - MALES INCLUDED
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
+
 # triploids
 dmA<-subset(dm,dm$ploidy==3)
 matrixA<-tapply(dmA$ploidy,list(dmA$year,dmA$site),length)
@@ -1104,26 +1185,28 @@ long_final<-long_final[-46,]
 long_final[is.na(long_final)] <- 0
 df.manip<-data.frame(long_final)
 
-# model
+# STATISTICAL MODEL
 lrfit <- glm(cbind(triploid,diploid)~ site+factor(period), family=binomial,data=df.manip)
 
 # overdispersion
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/43 
 
-#quasi
+# quasi
 lrfitq1<-glm(cbind(triploid,diploid)~ site+factor(period), family=quasibinomial,data=df.manip)
-summary(lrfitq1)
+
+# MODEL NOT SHOWN IN TEXT - RESULTS MENTIONED IN APPENDIX A
 anova(lrfitq1,test="F")
 ```
 Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. Calculations
 
 ```{r}
 # ASEXUAL FREQUENCY ACROSS TIME PERIODS
+
+# MANIPULATION AND CALCULATIONS
 # females, asexual vs. sexual
 # mean prevalence of asexuals
 # mean over each site*year 
-# matches Fig. 1e
 dp$ploidy[dp$ploidy==2]<-0
 dp$ploidy[dp$ploidy==3]<-1
 
@@ -1143,12 +1226,13 @@ t15<-cbind(m1,se1)
 rownames(t15)=c("2001-2005","2012-2016")
 colnames(t15)=c("mean proportion asexual females","se of mean")
 t15
-
 ```
-Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. Calculations
+Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. Calculations - presented in Table B3B
 
 ```{r}
 # ASEXUAL FREQUENCY ACROSS TIME PERIODS
+
+# MANIPULATION AND CALCULATIONS
 #4 overlapping sites
 dpsub$ploidy[dpsub$ploidy==2]<-0
 dpsub$ploidy[dpsub$ploidy==3]<-1
@@ -1165,7 +1249,7 @@ se1 = c((sd(longF$value[1:20])/sqrt(length(longF$value[1:20]))),
        sd(longF$value[21:40])/sqrt(length(longF$value[21:40])))
 
 # SUMMARY OF ASEXUAL FREQUENCY IN TWO TIME PERIODS, FOUR OVERLAPPING SITES
-# TABLE S3B
+# TABLE B3B
 t16<-cbind(m1,se1)
 rownames(t16)=c("2001-2005","2012-2016")
 colnames(t16)=c("mean proportion asexual females","se of mean")
@@ -1176,6 +1260,9 @@ t16
 Paragraphs 6 of the Results section. Comparison of asexual frequency in 2001-2005 v. 2012-2016. Figure 1E
 
 ```{r}
+# FIGURE 1E
+
+# MANIPULATION AND CALCULATIONS
 #  sex, asex by year
 total<-t(tapply(dp$ploidy,list(dp$year,dp$site),length))
 asex<-t(tapply(dp$ploidy,list(dp$year,dp$site),sum))
@@ -1185,14 +1272,15 @@ frequency = asex/total
 freq<-melt(frequency)
 freq<-na.omit(freq)
 
+# FIGURE 1E
 par(las=1)
 par(lwd=2)
 par(col="gray30")
 boxplot(freq$value[1:20],freq$value[21:50],
         ylim=c(0,1),
         ylab="",names=c("2001-2005","2012-2016"),
-        lwd=2,cex.axis=1.5, cex.names=2,outcex=1.5,
-        col="gray60")
+        lwd=2,cex.axis=1, cex.names=1,outcex=1.5,
+        col="gray90")
 
 # SAMPLE SIZE ESTIMATES
 # per replicate - 5 years in each box, per year
@@ -1209,7 +1297,7 @@ p2<-mean(t$value[21:50])
 p2_se<-sd(t$value[21:50]/sqrt(length(t$value[21:50])))
 p2_l<-length(t$value[21:50])
 
-# SAMPLE SIZE FIGURE 1C
+# SAMPLE SIZE FIGURE 1E (SAME AS FIGURE 1D)
 t17<-matrix(c(p1,p1_se,p1_l,p2,p2_se,p2_l),nrow=3,ncol=2)
 colnames(t17)=c("2001-2005","2012-2016")
 rownames(t17)=c("mean # females","se of mean","number of estimates of asexual frequency")
@@ -1219,8 +1307,11 @@ t17
 Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. GLM - variation in asexual frequency in the field from 2012-2016. All sites, females. Table 3
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
 dp2$ploidy[dp2$ploidy==2]<-0
 dp2$ploidy[dp2$ploidy==3]<-1
+
+# STATISTICAL MODELS
 
 lrfit <- glm(ploidy~site*factor(year), data=dp2, family=binomial)
 
@@ -1228,25 +1319,24 @@ lrfit <- glm(ploidy~site*factor(year), data=dp2, family=binomial)
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/1693
 
+# testing site*year interaction
 lrfit2 <- glm(ploidy~site+factor(year), data=dp2,family=binomial)
 anova(lrfit2,lrfit,test="LRT")
+# final model lrfit
 
 # TABLE 3
-summary(lrfit)
 anova(lrfit,test="Chisq")
-
-summary(lrfit2)
 
 # pseudo-R2
 lr <- glm( ploidy~ 
              +  1,  family = binomial,data=dp2)
 1-logLik(lrfit)/logLik(lr)
 
-# odds ratios using reduced model
+# odds ratios using reduced model,lrfit2
 exp(coef(lrfit2))
 exp(cbind(OR = coef(lrfit2), confint(lrfit2)))
 
-# yearly changes
+# linear contrasts to measure yearly changes
 # 2016 against 
 # 2015
 l <- cbind(0,0,0,0,0,0,0,0,1,-1)
@@ -1267,23 +1357,26 @@ wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l)
 wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), Terms = 7)
 ```
 
-Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. GLM - variation in asexual frequency in the field from 2012-2016. Four overlapping sites, females. Table S6
+Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. GLM - variation in asexual frequency in the field from 2012-2016. Four overlapping sites, females. Table B6
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
 dp2sub$ploidy[dp2sub$ploidy==2]<-0
 dp2sub$ploidy[dp2sub$ploidy==3]<-1
 
+# STATISTICAL MODELS
 lrfit <- glm(ploidy~site*factor(year), data=dp2sub, family=binomial)
 
 # overdispersion
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/1693
 
+# testing site*year interaction
 lrfit2 <- glm(ploidy~site+factor(year), data=dp2sub,family=binomial)
 anova(lrfit2,lrfit,test="LRT")
+# final model lrfit
 
-#TABLE S6
-summary(lrfit)
+#TABLE B6
 anova(lrfit,test="Chisq")
 
 # pseudo-R2
@@ -1291,86 +1384,49 @@ lr <- glm( ploidy~
              +  1, family = binomial,data=dp2sub)
 1-logLik(lrfit)/logLik(lr)
 
-# odds ratios, reduced model
+# odds ratios, reduced model lrfit2
 exp(coef(lrfit2))
 exp(cbind(OR = coef(lrfit2), confint(lrfit2)))
-
-# 2016 against 
-# 2015
-l <- cbind(0,0,0,0,0,0,1,-1)
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
-# 0.018 # only really an increase in 2016...
-
-# 2015 against 
-# 2014
-l <- cbind(0,0,0,0,0,1,-1,0)
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
-# same - 0.91
-
-# 2014 against 
-# 2013
-l <- cbind(0,0,0,0,1,-1,0,0)
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
-# more 0.81
-
-#2013 against
-# 2012
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), Terms = 5)
-# 0.33
 ```
 
 Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. GLM - variation in asexual frequency in the field from 2012-2016. All sites, females+males - MALES INCLUDED
 
 ```{r}
+# MANIPULATION AND CALCULATION
 dm2$ploidy[dm2$ploidy==2]<-0
 dm2$ploidy[dm2$ploidy==3]<-1
 
+# STATISTICAL MODELS
 lrfit <- glm(ploidy~site*factor(year), data=dm2, family=binomial)
 
 # overdispersion
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/2127
 
+# testing site*year interaction
 lrfit2 <- glm(ploidy~site+factor(year), data=dm2,family=binomial)
 anova(lrfit2,lrfit,test="LRT")
+# final mode, lrfit
 
 # pseudo-R2
 lr <- glm( ploidy~ 
              +  1,family = binomial,data=dm2)
 1-logLik(lrfit)/logLik(lr)
 
-summary(lrfit)
+# MODEL NOT PRESENTED IN RESULTS - MENTIONED IN APPENDIX A
 anova(lrfit,test="Chisq")
 
 # odds ratios
 exp(coef(lrfit2))
 exp(cbind(OR = coef(lrfit2), confint(lrfit2)))
-
-# yearly changes
-# 2016 against 
-# 2015
-l <- cbind(0,0,0,0,0,0,0,0,1,-1)
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
-
-# 2015 against 
-# 2014
-l <- cbind(0,0,0,0,0,0,0,1,-1,0)
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
-
-# 2014 against 
-# 2013
-l <- cbind(0,0,0,0,0,0,1,-1,0,0)
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), L = l) 
-
-#2013 against
-# 2012
-wald.test(b = coef(lrfit2), Sigma = vcov(lrfit2), Terms = 7)
 ```
 
 Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. Calculations
 
 ```{r}
 # FREQUENCIES OF ASEXUALS BY YEAR, 2012-2016
+
+# MANIPULATION AND CALCULATIONS
 # sexuals and asexuals by site and year
 T<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),length))
 A<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),sum))
@@ -1394,6 +1450,8 @@ Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 t
 
 ```{r}
 #cOST OF SEX BY YEAR - all sites
+
+# MANIPULATION AND CALCULATIONS
 # sexuals and asexuals by site and year
 T<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),length))
 A<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),sum))
@@ -1419,10 +1477,12 @@ colnames(t19)=c("cost of sex")
 t19
 ```
 
-Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. Calculations
+Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016; four overlapping sites. Calculations - results presented in Table B6
 
 ```{r}
 # FREQUENCIES OF ASEXUALS BY YEAR, 2012-2016 - overlapping sites only 
+
+# MANIPULATION AND CALCULATIONS
 ###restrict to overlapping sites
 # sexuals and asexuals by site and year
 T<-t(tapply(dp2sub$ploidy,list(dp2sub$year,dp2sub$site),length))
@@ -1437,17 +1497,19 @@ se = c(sd(longF$value[1:4])/sqrt(4),sd(longF$value[5:8])/sqrt(4),sd(longF$value[
        sd(longF$value[13:16])/sqrt(4),sd(longF$value[17:20])/sqrt(4))
 
 # SUMMARY OF ASEXUAL FREQUENCY FROM 2012-2016, FOUR SITES
-# TABLE S6
+# TABLE B6
 t20<-cbind(m,se)
 rownames(t20)=c("2012","2013","2014","2015","2016")
 colnames(t20)=c("mean proportion asexual females","se of mean")
 t20
 ```
 
-Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. Calculation
+Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. Calculations
 
 ```{r}
 # VARIATION IN ASEXUAL FREQUENCY BY SITE
+
+# MANIPULATION AND CALCULATIONS
 # probability of sampling an asexual female, by site
 # sexuals and asexuals by site and year
 T<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),length))
@@ -1464,6 +1526,8 @@ Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 t
 
 ```{r}
 # VARIATION IN MICROPHALLUS PREVALENCE BETWEEN SITES
+
+# MANIPULATION AND CALCULATIONS
  # probability of mic infection by site
 # for asexuals only
 
@@ -1480,20 +1544,20 @@ colnames(longaF)=c("site","year","prevalence")
 longaT<-melt(aT,id=c("year","frequency"))
 colnames(longaT)=c("site","year","number of asexuals sampled")
 
+# RESULTS FOR:
 # JMS
 jms<-subset(longaF,longaF$site=="jms")
 jms
-max(jms[,3])
 jms_counts<-subset(longaT,longaT$site=="jms")
 jms_counts
 
-# swamp
+# SWAMP
 swamp<-subset(longaF,longaF$site=="swamp")
 swamp
 swamp_counts<-subset(longaT,longaT$site=="swamp")
 swamp_counts
 
-# other four sites
+# OTHER FOUR SITES
 #means
 subaF<-subset(longaF,longaF$site!="swamp" & longaF$site!="jms")
 print("mean prevalence of Microphallus in asexuals at Camp, Halfway, SWEnd, and WPoint")
@@ -1507,6 +1571,9 @@ max(subaF$prevalence)
 Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. Figure 3A
 
 ```{r}
+# FIGURE 3A
+
+# MANIPULATION AND CALCULATIONS
 # sexuals and asexuals by site and year
 T<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),length))
 A<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),sum))
@@ -1526,14 +1593,14 @@ par(col="gray30")
 plot(mean,
      ylim=c(0,0.5),
      lwd=2,
-     cex.axis=1.6,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
      pch=21, cex=2.5, bg="gray50",
      xaxt="n",type="b",lty=2)
 axis(1, at=c(1,2,3,4,5),labels=c("2012","2013","2014","2015","2016"),
-     cex.axis=1.6)
+     cex.axis=1)
 arrows(c(1,2,3,4,5),mean-se,c(1,2,3,4,5),mean+se,
        code=3,      #arrow type
        angle=90,
@@ -1555,6 +1622,9 @@ t21
 Paragraphs 14-17 of the Results section. Change in asexual frequency from 2012 to 2016. Figure 3B
 
 ```{r}
+# FIGURE 3B
+
+# MANIPULATION AND CALCULATIONS
 # sexuals and asexuals by site and year
 T<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),length))
 A<-t(tapply(dp2$ploidy,list(dp2$year,dp2$site),sum))
@@ -1567,7 +1637,7 @@ longT<-melt(T,id=c("site","year","frequency"))
 names(longT)=c("site","year","total")
 
 # site by site
-# swend
+# SWEND
 swe<-subset(longF,longF$site=="swend")
 tswe<-subset(longT,longT$site=="swend")
 mswe=mean(swe$frequency)
@@ -1579,18 +1649,17 @@ se_swe=sqrt((swe$frequency*(1-swe$frequency))/tswe$total)
 par(las=1)
 par(lwd=2)
 par(col="gray30")
-par(mar=c(2,5,1,1))
 plot(swe$frequency,
      ylim=c(0,1),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
      pch=21, cex=2.5, bg="gray50",
      xaxt="n",type="b",lty=3)
 axis(1, at=c(1,2,3,4,5),labels=c("","","","",""),
-     cex.axis=1.6)
+     cex.axis=1)
 arrows(c(1,2,3,4,5),swe$frequency-se_swe,c(1,2,3,4,5),swe$frequency+se_swe,
        code=3,      #arrow type
        angle=90,
@@ -1600,7 +1669,7 @@ arrows(c(1,2,3,4,5),swe$frequency-se_swe,c(1,2,3,4,5),swe$frequency+se_swe,
 points(swe$frequency,pch=21, cex=3, bg="gray50") #bg="#0571b0")
 text(2,0.92,"Southwest End",cex=2.2,col="black")
 
-# camp
+# CAMP
 camp<-subset(longF,longF$site=="camp")
 tcamp<-subset(longT,longT$site=="camp")
 mcamp=mean(camp$frequency)
@@ -1613,29 +1682,28 @@ se_camp=sqrt((camp$frequency*(1-camp$frequency))/tcamp$total)
 par(las=1)
 par(lwd=2)
 par(col="gray30")
-par(mar=c(2,3,1,3))
 plot(camp$frequency,
      ylim=c(0,1),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
      pch=21, cex=3, bg="gray50",
      xaxt="n",type="b",lty=3,
      yaxt="n")
 axis(1, at=c(1,2,3,4,5),labels=c("","","","",""),
-     cex.axis=1.6)
+     cex.axis=1)
 arrows(c(1,2,3,4,5),camp$frequency-se_camp,c(1,2,3,4,5),camp$frequency+se_camp,
        code=3,      #arrow type
        angle=90,
        length=0.1,
        lwd=2,
        col="gray30")
-points(camp$frequency,pch=21, cex=3, bg="gray50")#bg="#0571b0")
+points(camp$frequency,pch=21, cex=3, bg="gray50")
 text(1.4,0.92,"Camp",cex=2.2,col="black")
 
-#wpoint
+#WPOINT
 wp<-subset(longF,longF$site=="wpoint")
 twp<-subset(longT,longT$site=="wpoint")
 mwp=mean(wp$frequency)
@@ -1651,14 +1719,14 @@ par(mar=c(2,5,1,1))
 plot(wp$frequency,
      ylim=c(0,1),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
      pch=21, cex=3, bg="gray50",
      xaxt="n",type="b",lty=3)
 axis(1, at=c(1,2,3,4,5),labels=c("","","","",""),
-     cex.axis=1.6)
+     cex.axis=1)
 arrows(c(1,2,3,4,5),wp$frequency-se_wp,c(1,2,3,4,5),wp$frequency+se_wp,
        code=3,      #arrow type
        angle=90,
@@ -1669,8 +1737,7 @@ points(wp$frequency,pch=21, cex=3,bg="gray50") #bg="gray40")
 text(1.7,0.92,"West Point",cex=2.2,col="black")
 
 
-#halfway
-#wpoint
+# HALFWAY
 hw<-subset(longF,longF$site=="halfway")
 thw<-subset(longT,longT$site=="halfway")
 mhw=mean(hw$frequency)
@@ -1682,19 +1749,18 @@ se_hw=sqrt((hw$frequency*(1-hw$frequency))/thw$total)
 par(las=1)
 par(lwd=2)
 par(col="gray30")
-par(mar=c(2,3,1,3))
 plot(hw$frequency,
      ylim=c(0,1),
      lwd=2,
-     cex.axis=1.6,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
      pch=21, cex=2.5, bg="gray50",
      xaxt="n",type="b",lty=3,
      yaxt="n")
 axis(1, at=c(1,2,3,4,5),labels=c("","","","",""),
-     cex.axis=1.6)
+     cex.axis=1)
 arrows(c(1,2,3,4,5),hw$frequency-se_hw,c(1,2,3,4,5),hw$frequency+se_hw,
        code=3,      #arrow type
        angle=90,
@@ -1704,7 +1770,7 @@ arrows(c(1,2,3,4,5),hw$frequency-se_hw,c(1,2,3,4,5),hw$frequency+se_hw,
 points(hw$frequency,pch=21, cex=3,bg="gray50") #bg="gray40")
 text(1.5,0.92,"Halfway",cex=2.2,col="black")
 
-#jms
+#JMS
 jms<-subset(longF,longF$site=="jms")
 tjms<-subset(longT,longT$site=="jms")
 mjms=mean(jms$frequency)
@@ -1716,18 +1782,17 @@ se_jms=sqrt((jms$frequency*(1-jms$frequency))/tjms$total)
 par(las=1)
 par(lwd=2)
 par(col="gray30")
-par(mar=c(2,5,1,1))
 plot(jms$frequency,
      ylim=c(0,1),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2.5,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
      pch=21, cex=2.5, bg="gray50",
      xaxt="n",type="b",lty=3)
 axis(1, at=c(1,2,3,4,5),labels=c("2012","2013","2014","2015","2016"),
-     cex.axis=2)
+     cex.axis=1)
 arrows(c(1,2,3,4,5),jms$frequency-se_jms,c(1,2,3,4,5),jms$frequency+se_jms,
        code=3,      #arrow type
        angle=90,
@@ -1737,7 +1802,7 @@ arrows(c(1,2,3,4,5),jms$frequency-se_jms,c(1,2,3,4,5),jms$frequency+se_jms,
 points(jms$frequency,pch=21, cex=3,bg="gray50") #bg="#ca0020")
 text(1.3,0.92,"JMS",cex=2.2,col="black")
 
-#swamp
+#SWAMP
 swa<-subset(longF,longF$site=="swamp")
 tswa<-subset(longT,longT$site=="swamp")
 mswa=mean(swa$frequency)
@@ -1749,19 +1814,18 @@ se_swa=sqrt((swa$frequency*(1-swa$frequency))/tswa$total)
 par(las=1)
 par(lwd=2)
 par(col="gray30")
-par(mar=c(2,3,1,3))
 plot(swa$frequency,
      ylim=c(0,1),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
      pch=21, cex=2.5, bg="gray50",
      xaxt="n",type="b",lty=3,
      yaxt="n")
 axis(1, at=c(1,2,3,4,5),labels=c("2012","2013","2014","2015","2016"),
-     cex.axis=2)
+     cex.axis=1)
 arrows(c(1,2,3,4,5),swa$frequency-se_swa,c(1,2,3,4,5),swa$frequency+se_swa,
        code=3,      #arrow type
        angle=90,
@@ -1772,34 +1836,42 @@ points(swa$frequency,pch=21, cex=3, bg="gray50")#bg="#ca0020")
 text(1.5,0.92,"Swamp",cex=2.2,col="black")
 ```
 
-Field Results in the Appendix. Comparison of sexual male and female infection rates in the field, 2012-2016. GLM - variation in infection rate in sexual individuals in the field from 2012-2016. All sites. Table S7
+Field Results in the Appendix. Comparison of sexual male and female infection rates in the field, 2012-2016. GLM - variation in infection rate in sexual individuals in the field from 2012-2016. All sites. Table B7
 
 ```{r}
+# STATISTICAL MODELS
+
 lrfit <- glm(mic~site*factor(year)*factor(sex) + length, family=binomial,data=dm2_dip)
 
 # overdispersion 
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/1712
 
+# testing three-way interaction
 lrfit2 <- glm(mic~site*factor(year)+site*factor(sex)+factor(year)*factor(sex) + length, family=binomial,data=dm2_dip)
 anova(lrfit2,lrfit,test="LRT")
+
+# testing site*sex interaction
 lrfit3 <- glm(mic~site*factor(year)+factor(year)*factor(sex) + length, family=binomial,data=dm2_dip)
 anova(lrfit3,lrfit2,test="LRT")
+# final model lrfit3
 
-# TABLE S7
-summary(lrfit3)
+# TABLE B7
 anova(lrfit3,test="Chisq")
 
+# pseudo-r2
 lr <- glm( mic~ 
              +  1, family = binomial,data=dm2_dip)
 1-logLik(lrfit3)/logLik(lr)
 
 ```
 
-Field Results in the Appendix. Comparison of sexual male and female infection rates in the field, 2012-2016. Calculations
+Field Results in APPENDIX A. Comparison of sexual male and female infection rates in the field, 2012-2016. Calculations
 
 ```{r}
 #  PREVALENCE OF MICROPHALLUS INFECTION IN MALES V DIPLOID FEMALES
+
+# MANIPULATION AND CALCULATIONS
 # infected and uninfected by year/site
 # female
 Fem<-subset(dm2_dip,dm2_dip$sex==0)
@@ -1831,9 +1903,12 @@ rownames(t22)=c("diploid females","males")
 t22
 ```
 
-Field Results in the Appendix. Prevalence of infection in sexual and asexual females by site. Figure S2
+Field Results in APPENDIX B. Prevalence of infection in sexual and asexual females by site. Figure B2
 
 ```{r}
+# FIGURE B2
+
+# MANIPULATION AND CALCULATIONS
 #Sexuals
 dataS<-subset(dp2,dp2$ploidy==0)
 totalS<-t(tapply(dataS$mic,list(dataS$year,dataS$site),length))
@@ -1852,12 +1927,14 @@ freqA<-micA/totalA
 mean(na.omit(totalA))
 sd(na.omit(totalA))/sqrt(27)
 #
-#######
+
+# FIGURE B2
 # SW End
 SW<-t(rbind(freqS[5,],freqA[5,]))
 tSW<-t(rbind(totalS[5,],totalA[5,]))
 se_swe=sqrt((SW*(1-SW))/tSW)
 
+# UPPER LEFT
 par(las=1)
 par(lwd=2)
 par(col="gray20")
@@ -1865,15 +1942,15 @@ plot(SW[,1],
      ylim=c(0,1),
      xlim=c(1,5.5),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
-     pch=21, cex=3, bg=c("#ca0020","#ca0020","#ca0020","#ca0020","white"),
+     pch=21, cex=3, bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","white"),
      xaxt="n",type="p",lty=1,col=c("gray20","gray20","gray20","gray20","white"))
 
-axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("","","","",""),
-     cex.axis=1.6)
+axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("2012","2013","2014","2015","2016"),
+     cex.axis=1)
 text(1.8,0.92,"Southwest End",cex=2,col="black")
 
 arrows(c(1,2,3,4),SW[,1]-se_swe[,1],c(1,2,3,4),SW[,1]+se_swe[,1],
@@ -1881,7 +1958,7 @@ arrows(c(1,2,3,4),SW[,1]-se_swe[,1],c(1,2,3,4),SW[,1]+se_swe[,1],
        angle=90,
        length=0.1,
        lwd=1)
-points(SW[,1],pch=21, cex=3,bg=c("#ca0020","#ca0020","#ca0020","#ca0020","white"),
+points(SW[,1],pch=21, cex=3,bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","white"),
   col=c("gray20","gray20","gray20","gray20","white"))
 
 arrows(c(2.25),SW[,2]-se_swe[,2],c(2.25),SW[,2]+se_swe[,2],
@@ -1890,23 +1967,23 @@ arrows(c(2.25),SW[,2]-se_swe[,2],c(2.25),SW[,2]+se_swe[,2],
        length=0.1,
        lwd=1)
 points(x=c(1.25,2.25,3.25,4.25,5.25),
-       y=SW[,2],pch=23, cex=3, bg=c("#0571b0","#0571b0","white","white","white"),
+       y=SW[,2],pch=23, cex=3, bg=c("#525252","#525252","white","white","white"),
        col=c("gray20","gray20","white","white","white"))
 points(1.25,0.0,pch=22,cex=2,bg=c("white"),col="gray20",lwd=2,xpd=TRUE)
 
 legend(3.5,1,legend=c("sexual females","asexual females"),pch=c(21,23),
-       pt.bg=c("#ca0020","#0571b0"),
-       col="gray10",pt.cex=2.8,cex=1.6,bty="n")
+       pt.bg=c("#bdbdbdbd","#525252"),
+       col="gray10",pt.cex=1.5,cex=1,bty="n")
 box()
 
 
-par(mar=c(2,1,2,2))
 boxplot(SW[,1],SW[,2],
         ylim=c(0,1),yaxt="n",
         ylab="",outcex=1.5,
-        lwd=2,cex.axis=1.5,cex.names=2,
-        col=c("#ca0020","#0571b0"))
-text(0.8,0.92,"Southwest End",cex=2.2,col="black")
+        lwd=2,cex.axis=1,cex.names=2,
+                names=c("Sexual","Asexual"),
+        col=c("#bdbdbd","#525252"))
+text(1,0.92,"Southwest End",cex=2.2,col="black")
 
 ######
 #Camp
@@ -1914,20 +1991,21 @@ camp<-t(rbind(freqS[1,],freqA[1,]))
 tcamp<-t(rbind(totalS[1,],totalA[1,]))
 se_camp=sqrt((camp*(1-camp))/tcamp)
 
+# UPPER RIGHT
 plot(camp[,1],
      ylim=c(0,1),
      xlim=c(1,5.5),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
-     pch=21, cex=3, bg=c("#ca0020","#ca0020","#ca0020","#ca0020","white"),
+     pch=21, cex=3, bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","white"),
      xaxt="n",type="p",lty=1,col=c("gray20","gray20","gray20","gray20","white"),
      yaxt="n")
 
-axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("","","","",""),
-     cex.axis=1.6)
+axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("2012","2013","2014","2015","2016"),
+     cex.axis=1)
 text(1.25,0.92,"Camp",cex=2,col="black")
 
 arrows(c(1,2,3,4),camp[,1]-se_camp[,1],c(1,2,3,4),camp[,1]+se_camp[,1],
@@ -1935,7 +2013,7 @@ arrows(c(1,2,3,4),camp[,1]-se_camp[,1],c(1,2,3,4),camp[,1]+se_camp[,1],
        angle=90,
        length=0.1,
        lwd=1)
-points(camp[,1],pch=21, cex=3,bg=c("#ca0020","#ca0020","#ca0020","#ca0020","white"),
+points(camp[,1],pch=21, cex=3,bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","white"),
        col=c("gray20","gray20","gray20","gray20","white"))
 
 arrows(c(1.25,2.25,3.25,4.25,5.25),camp[,2]-se_camp[,2],c(1.25,2.25,3.25,4.25,5.25),camp[,2]+se_camp[,2],
@@ -1946,15 +2024,16 @@ arrows(c(1.25,2.25,3.25,4.25,5.25),camp[,2]-se_camp[,2],c(1.25,2.25,3.25,4.25,5.
        col=c("gray20","white","white","gray20","gray20"))
 
 points(x=c(1.25,2.25,3.25,4.25,5.25),
-       y=camp[,2],pch=23, cex=3, bg=c("#0571b0","white","white","#0571b0","#0571b0"),
+       y=camp[,2],pch=23, cex=3, bg=c("#525252","white","white","#525252","#525252"),
        col=c("gray20","white","white","gray20","gray20"))
 box()
 
 boxplot(camp[,1],camp[,2],
         ylim=c(0,1),
         ylab="",yaxt="n",outcex=1.5,
-        lwd=2,cex.axis=1.5,cex.names=2,
-        col=c("#ca0020","#0571b0"))
+        lwd=2,cex.axis=1,cex.names=1,
+                names=c("Sexual","Asexual"),
+        col=c("#bdbdbd","#525252"))
 text(0.6,0.92,"Camp",cex=2.2,col="black")
 
 ######################
@@ -1963,19 +2042,20 @@ wp<-t(rbind(freqS[6,],freqA[6,]))
 twp<-t(rbind(totalS[6,],totalA[6,]))
 se_wp=sqrt((wp*(1-wp))/twp)
 
+# MIDDLE LEFT
 plot(wp[,1],
      ylim=c(0,1),
      xlim=c(1,5.5),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
-     pch=21, cex=3, bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+     pch=21, cex=3, bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
      xaxt="n",type="p",lty=1,col=c("gray20","gray20","gray20","gray20","gray20"))
 
-axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("","","","",""),
-     cex.axis=1.6)
+axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("2012","2013","2014","2015","2016"),
+     cex.axis=1)
 
 text(1.55,0.92,"West Point",cex=2,col="black")
 
@@ -1985,7 +2065,7 @@ arrows(c(1,2,3,4,5),wp[,1]-se_wp[,1],c(1,2,3,4,5),wp[,1]+se_wp[,1],
        length=0.1,
        lwd=1)
 
-points(wp[,1],pch=21, cex=3,bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+points(wp[,1],pch=21, cex=3,bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
        col=c("gray20","gray20","gray20","gray20","gray20"))
 
 arrows(c(2.25,3.25,4.25,5.25),wp[2:5,2]-se_wp[2:5,2],c(2.25,3.25,4.25,5.25),wp[2:5,2]+se_wp[2:5,2],
@@ -1996,7 +2076,7 @@ arrows(c(2.25,3.25,4.25,5.25),wp[2:5,2]-se_wp[2:5,2],c(2.25,3.25,4.25,5.25),wp[2
        col=c("gray20","white","white","gray20"))
 
 points(x=c(1.25,2.25,3.25,4.25,5.25),
-       y=wp[,2],pch=23, cex=3, bg=c("white","#0571b0","white","white","#0571b0"),
+       y=wp[,2],pch=23, cex=3, bg=c("white","#525252","white","white","#525252"),
        col=c("white","gray20","white","white","gray20"))
 
 points(1.25,0.0,pch=22,cex=2,bg=c("white"),col="gray20",lwd=2,xpd=TRUE)
@@ -2006,8 +2086,9 @@ box()
 boxplot(wp[,1],wp[,2],
         ylim=c(0,1),
         ylab="",yaxt="n",outcex=1.5,
-        lwd=2,cex.axis=1.5,cex.names=2,
-        col=c("#ca0020","#0571b0"))
+        lwd=2,cex.axis=1,cex.names=1,
+                names=c("Sexual","Asexual"),
+        col=c("#bdbdbd","#525252"))
 text(0.75,0.92,"West Point",cex=2.2,col="black")
 
 #####################
@@ -2016,20 +2097,20 @@ half<-t(rbind(freqS[2,],freqA[2,]))
 thalf<-t(rbind(totalS[2,],totalA[2,]))
 se_half=sqrt((half*(1-half))/thalf)
 
+# MIDDLE RIGHT
 plot(half[,1],
      ylim=c(0,1),
      xlim=c(1,5.5),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
-     pch=21, cex=3, bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+     pch=21, cex=3, bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
      xaxt="n",type="p",lty=1,col=c("gray20","gray20","gray20","gray20","gray20"),
      yaxt="n")
-
-axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("","","","",""),
-     cex.axis=1.6)
+axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("2012","2013","2014","2015","2016"),
+     cex.axis=1)
 text(1.35,0.92,"Halfway",cex=2,col="black")
 
 arrows(c(1,2,3,4,5),half[,1]-se_half[,1],c(1,2,3,4,5),half[,1]+se_half[,1],
@@ -2037,18 +2118,17 @@ arrows(c(1,2,3,4,5),half[,1]-se_half[,1],c(1,2,3,4,5),half[,1]+se_half[,1],
        angle=90,
        length=0.1,
        lwd=1)
-points(half[,1],pch=21, cex=3,bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+points(half[,1],pch=21, cex=3,bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
        col=c("gray20","gray20","gray20","gray20","gray20"))
 
-arrows(c(2.25,3.25,4.25,5.25),half[2:5,2]-se_half[2:5,2],c(2.25,3.25,4.25,5.25),half[2:5,2]+se_half[2:5,2],
-       code=3,      #arrow type
+arrows(c(2.25,3.25,4.25,5.25),half[2:5,2]-se_half[2:5,2],c(2.25,3.25,4.25,5.25),half[2:5,2]+se_half[2:5,2],       code=3,      #arrow type
        angle=90,
        length=0.1,
        lwd=1,
        col=c("white","white","white","gray20"))
 
 points(x=c(1.25,2.25,3.25,4.25,5.25),
-       y=half[,2],pch=23, cex=3, bg=c("white","white","white","white","#0571b0"),
+       y=half[,2],pch=23, cex=3, bg=c("white","white","white","white","#525252"),
        col=c("white","white","white","white","gray20"))
 
 points(1.25,0.0,pch=22,cex=2,bg=c("white"),col="gray20",lwd=2,xpd=TRUE)
@@ -2058,8 +2138,9 @@ box()
 boxplot(half[,1],half[,2],
         ylim=c(0,1),
         ylab="",yaxt="n",outcex=1.5,
-        lwd=2,cex.axis=1.5,cex.names=2,
-        col=c("#ca0020","#0571b0"))
+        lwd=2,cex.axis=1,cex.names=1,
+                names=c("Sexual","Asexual"),
+        col=c("#bdbdbd","#525252"))
 text(0.65,0.92,"Halfway",cex=2.2,col="black")
 
 
@@ -2069,19 +2150,20 @@ jms<-t(rbind(freqS[3,],freqA[3,]))
 tjms<-t(rbind(totalS[3,],totalA[3,]))
 se_jms=sqrt((jms*(1-jms))/tjms)
 
+# BOTTOM RIGHT
 plot(jms[,1],
      ylim=c(0,1),
      xlim=c(1,5.5),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
-     pch=21, cex=3, bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+     pch=21, cex=3, bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
      xaxt="n",type="p",lty=1,col=c("gray20","gray20","gray20","gray20","gray20"))
 
 axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("2012","2013","2014","2015","2016"),
-     cex.axis=2)
+     cex.axis=1)
 
 text(1.25,0.92,"JMS",cex=2,col="black")
 
@@ -2090,7 +2172,7 @@ arrows(c(1,2,3,4,5),jms[,1]-se_jms[,1],c(1,2,3,4,5),jms[,1]+se_jms[,1],
        angle=90,
        length=0.1,
        lwd=1)
-points(jms[,1],pch=21, cex=3,bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+points(jms[,1],pch=21, cex=3,bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
        col=c("gray20","gray20","gray20","gray20","gray20"))
 
 arrows(c(1.25,2.25,3.25,4.25,5.25),jms[,2]-se_jms[,2],c(1.25,2.25,3.25,4.25,5.25),jms[,2]+se_jms[,2],
@@ -2101,7 +2183,7 @@ arrows(c(1.25,2.25,3.25,4.25,5.25),jms[,2]-se_jms[,2],c(1.25,2.25,3.25,4.25,5.25
        col=c("white","white","gray20","white","gray20"))
 
 points(x=c(1.25,2.25,3.25,4.25,5.25),
-       y=jms[,2],pch=23, cex=3, bg=c("white","white","#0571b0","white","#0571b0"),
+       y=jms[,2],pch=23, cex=3, bg=c("white","white","#525252","white","#525252"),
        col=c("white","white","gray20","white","gray20"))
 
 box()
@@ -2109,9 +2191,9 @@ box()
 boxplot(jms[,1],jms[,2],
         ylim=c(0,1),
         ylab="",yaxt="n",
-        lwd=2,cex.axis=2,cex.names=2,outcex=1.5,
+        lwd=2,cex.axis=1,cex.names=1,outcex=1.5,
         names=c("Sexual","Asexual"),
-        col=c("#ca0020","#0571b0"))
+        col=c("#bdbdbd","#525252"))
 text(0.575,0.92,"JMS",cex=2.2,col="black")
 
 ####################
@@ -2120,19 +2202,20 @@ swamp<-t(rbind(freqS[4,],freqA[4,]))
 tswamp<-t(rbind(totalS[4,],totalA[4,]))
 se_swamp=sqrt((swamp*(1-swamp))/tswamp)
 
+# BOTTOM RIGHT
 plot(swamp[,1],
      ylim=c(0,1),
      xlim=c(1,5.5),
      lwd=2,
-     cex.axis=2,
-     cex.lab=2,
+     cex.axis=1,
+     cex.lab=1,
      ylab="",
      xlab="",
-     pch=21, cex=3, bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+     pch=21, cex=3, bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
      xaxt="n",yaxt="n",type="p",lty=1,col=c("gray20","gray20","gray20","gray20","gray20"))
 
 axis(1, at=c(1.125,2.125,3.125,4.125,5.125),labels=c("2012","2013","2014","2015","2016"),
-     cex.axis=2)
+     cex.axis=1)
 
 text(1.35,0.92,"Swamp",cex=2.2,col="black")
 
@@ -2141,7 +2224,7 @@ arrows(c(1,2,3,4,5),swamp[,1]-se_swamp[,1],c(1,2,3,4,5),swamp[,1]+se_swamp[,1],
        angle=90,
        length=0.1,
        lwd=1)
-points(swamp[,1],pch=21, cex=3,bg=c("#ca0020","#ca0020","#ca0020","#ca0020","#ca0020"),
+points(swamp[,1],pch=21, cex=3,bg=c("#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd","#bdbdbd"),
        col=c("gray20","gray20","gray20","gray20","gray20"))
 
 arrows(c(1.25,2.25,3.25,4.25,5.25),swamp[,2]-se_swamp[,2],c(1.25,2.25,3.25,4.25,5.25),swamp[,2]+se_swamp[,2],
@@ -2152,7 +2235,7 @@ arrows(c(1.25,2.25,3.25,4.25,5.25),swamp[,2]-se_swamp[,2],c(1.25,2.25,3.25,4.25,
        col=c("gray20","gray20","gray20","gray20","gray20"))
 
 points(x=c(1.25,2.25,3.25,4.25,5.25),
-       y=swamp[,2],pch=23, cex=3, bg=c("#0571b0","#0571b0","#0571b0","#0571b0","#0571b0"),
+       y=swamp[,2],pch=23, cex=3, bg=c("#525252","#525252","#525252","#525252","#525252"),
        col=c("gray20","gray20","gray20","gray20","gray20"))
 
 box()
@@ -2160,15 +2243,18 @@ box()
 boxplot(swamp[,1],swamp[,2],
         ylim=c(0,1),
         ylab="",yaxt="n",
-        lwd=2,cex.axis=2,cex.names=2,outcex=1.5,
+        lwd=2,cex.axis=1,cex.names=1,outcex=1.5,
         names=c("Sexual","Asexual"),
-        col=c("#ca0020","#0571b0"))
+        col=c("#bdbdbd","#525252"))
 text(0.65,0.92,"Swamp",cex=2.2,col="black")
 ```
 
-Field Results in the Appendix. Comparison of sexual male and female infection rates in the field, 2012-2016. Figure S5
+Field Results in APPENDIX B. Comparison of sexual male and female infection rates in the field, 2012-2016. Figure B5
 
 ```{r}
+# FIGURE B5
+
+# MANIPULATION AND CALCULATIONS
 # infected and uninfected by year/site
 # female
 Fem<-subset(dm2_dip,dm2_dip$sex==0)
@@ -2188,15 +2274,15 @@ longMF<-melt(MF,id=c("year","frequency"))
 longFF<-na.omit(longFF)
 longMF<-na.omit(longMF)
 
-# FIGURE S5
+# FIGURE B5
 par(las=1)
 par(lwd=2)
 par(col="gray20")
 boxplot(longFF$value,longMF$value,
         ylim=c(0,1),ylab="", 
-        lwd=2,cex.axis=1.5,names=c("Diploid Females","Males"),
+        lwd=2,cex.axis=1,names=c("Diploid Females","Males"),
         xlab="",outcex=1.5,
-        col=c("#ca0020","#f4a582"))
+        col=c("#bdbdbd","white"))
 
 # SAMPLE SIZE FIGURE S5
 mm<-mean(MT)

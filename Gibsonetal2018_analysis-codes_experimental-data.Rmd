@@ -1,14 +1,15 @@
 ---
-title: "Gibson2018_analysis+codes_experimental+data"
+title: "Gibson2018_analysis-codes_experimental-data"
 author: "Amanda Gibson"
-date: "May 15, 2018"
+date: "June 18, 2018"
 output: pdf_document
 ---
 
 For paper Periodic, parasite-mediated selection for and against sex; Gibson, Delph, Vergara, and Lively 2018
-Packages used
 
+Packages used
 ```{r}
+# PACKAGES
 library(reshape)
 library(matrixStats)
 library(Hmisc)
@@ -21,8 +22,8 @@ options(digits=4)
 ```
 
 Data sets
-
 ```{r}
+# IMPORTING DATA
 # experimental mesocosms; adult females
 ba0<-read.csv("Bins_adults.csv")
 ba<-subset(ba0,ba0$sex==0 & ba0$ploidy>0)
@@ -37,14 +38,14 @@ bb0<-read.csv("Bins_babies.csv")
 bb<-subset(bb0,bb0$ploidy>0)
 
 # experimental mesocosms; adults+babies
-bab<-read.csv("Bins_adults+babies.csv")
+bab<-read.csv("Bins_adults-babies.csv")
 bab<-subset(bab,bab$ploidy>0)
 
 ```
 
-Paragraphs 8-9 of the Results section. Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. GEE - Microphallus infection rate in sexual and asexual snails in experimental replicates. Females. Table S4A
-
+Paragraphs 8-9 of the Results section. Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. GEE - Microphallus infection rate in sexual and asexual snails in experimental replicates. Females. Table B4A
 ```{r}
+# MANIPULATION AND CALCULATIONS
 # subset by ploidy and treatment
 aC=subset(ba,ba$treatment==0 & ba$ploidy==3)
 aE=subset(ba,ba$treatment==1 & ba$ploidy==3)
@@ -121,31 +122,39 @@ Es=cbind(Es,healthy,ploidy,treatment,tank)
 
 inf<-rbind(Ca,Cs,Ea,Es)
 
+# STATISTICAL MODELS
 geefit1<-geeglm( cbind(mic,healthy) ~ treatment+factor(year)+factor(ploidy)+
                    treatment*factor(year)+treatment*factor(ploidy)+factor(year)*factor(ploidy)+
                    treatment*factor(year)*factor(ploidy), 
                  family = binomial,data=inf,
                  id=tank,corstr="exchangeable")
+
+# testing three-way interaction
 wald.test(b = coef(geefit1), Sigma = vcov(geefit1), Terms = 14:16)
 
 geefit2<-geeglm( cbind(mic,healthy) ~ treatment+factor(year)+factor(ploidy)+
                    treatment*factor(year)+treatment*factor(ploidy)+factor(year)*factor(ploidy), 
                  family = binomial,data=inf,
                  id=tank,corstr="exchangeable")
-wald.test(b = coef(geefit2), Sigma = vcov(geefit2), Terms = 10)
 
+#testing treatment* ploidy
+wald.test(b = coef(geefit2), Sigma = vcov(geefit2), Terms = 10)
 
 geefit3<-geeglm( cbind(mic,healthy) ~ treatment+factor(year)+factor(ploidy)+
                    treatment*factor(year)+factor(year)*factor(ploidy), 
                  family = binomial,data=inf,
                  id=tank,corstr="exchangeable")
-#TABLE S4A
+# final model geefit3
+
+#TABLE B4A
 anova(geefit3,test="LRT")
 ```
 
-Paragraphs 8-9 of the Results section. Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. GEE - All castrating trematode infection rate in sexual and asexual snails in experimental replicates. Females. Table S4B
+Paragraphs 8-9 of the Results section. Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. GEE - All castrating trematode infection rate in sexual and asexual snails in experimental replicates. Females. Table B4B
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
+
 # control asexuals
 aCT=tapply(aC$castrated,list(aC$year,aC$replicate),length)
 LaCT=melt(aCT)
@@ -216,26 +225,32 @@ Es=cbind(Es,healthy,ploidy,treatment,tank)
 
 inf<-rbind(Ca,Cs,Ea,Es)
 
+# STATISTICAL MODELS
 geefit1<-geeglm( cbind(cas,healthy) ~ treatment+factor(year)+factor(ploidy)+
                    treatment*factor(year)+treatment*factor(ploidy)+factor(year)*factor(ploidy)+
                    treatment*factor(year)*factor(ploidy), 
                  family = binomial,data=inf,
                  id=tank,corstr="exchangeable")
+
+# testing three-way interaction
 wald.test(b = coef(geefit1), Sigma = vcov(geefit1), Terms = 14:16)
 
 geefit2<-geeglm( cbind(cas,healthy) ~ treatment+factor(year)+factor(ploidy)+
                    treatment*factor(year)+treatment*factor(ploidy)+factor(year)*factor(ploidy), 
                  family = binomial,data=inf,
                  id=tank,corstr="exchangeable")
-# TABLE S4B
+# final model geefit2
+
+# TABLE B4B
 anova(geefit2,test="LRT")
 
-summary(geefit2)
 ```
 
 Paragraphs 8-9 of the Results section. Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. GEE - Microphallus infection rate in sexual and asexual snails in experimental replicates. Females + Males. MALES INCLUDED
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
+
 # subset by ploidy and treatment
 aC=subset(bm,bm$treatment==0 & bm$ploidy==3)
 aE=subset(bm,bm$treatment==1 & bm$ploidy==3)
@@ -312,12 +327,17 @@ Es=cbind(Es,healthy,ploidy,treatment,tank)
 
 inf<-rbind(Ca,Cs,Ea,Es)
 
+# STATISTICAL MODELS
 geefit1<-geeglm( cbind(mic,healthy) ~ treatment+factor(year)+factor(ploidy)+
                    treatment*factor(year)+treatment*factor(ploidy)+factor(year)*factor(ploidy)+
                    treatment*factor(year)*factor(ploidy), 
                  family = binomial,data=inf,
                  id=tank,corstr="exchangeable")
+# testing three-way interaction
 wald.test(b = coef(geefit1), Sigma = vcov(geefit1), Terms = 14:16)
+# final model geefit2
+
+# MODEL NOT SHOWN IN TEXT - RESULTS NOTED IN APPENDIX A
 anova(geefit1,test="LRT")
 
 ```
@@ -326,6 +346,8 @@ Paragraphs 8-9 of the Results section. Comparison of parasite infectivity agains
 
 ```{r}
 # EXPERIMENTAL EXPOSURES - INCREASE IN MICROPHALLUS INFECTION RATE ACROSS TREATMENTS
+
+# MANIPULATION AND CALCULATIONS
 # increase in infection from control to exposed tanks#
 # control tanks
 # all females, yes/no mic by tank, year
@@ -358,6 +380,8 @@ Paragraphs 8-9 of the Results section. Comparison of parasite infectivity agains
 
 ```{r}
 # SEXUAL V ASEXUAL INFECTION RATE - CONTROL TANKS
+
+# MANIPULATION AND CALCULATIONS
 # differential infection in control tanks#
 Ca<-subset(ba, ba$treatment==0 &ba$ploidy==3)
 tCa=tapply(Ca$mic,list(Ca$replicate,Ca$year),length)
@@ -391,6 +415,8 @@ Paragraphs 8-9 of the Results section. Comparison of parasite infectivity agains
 
 ```{r}
 ## SEXUAL V ASEXUAL INFECTION RATE - EXPOSED TANKS
+
+# MANIPULATION AND CALCULATIONS
 # differential infection in exposed tanks#
 Ea<-subset(ba,ba$treatment==1 &ba$ploidy==3)
 tEa=tapply(Ea$mic,list(Ea$replicate,Ea$year),length)
@@ -420,9 +446,11 @@ print("fold-change")
 fold
 ```
 
-Paragraphs 8-9 of the Results section. Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. Figure 2A
-
+Paragraphs 8-9 of the Results section. Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. Figure 2A & B3
 ```{r}
+# FIGURES 2A AND B3
+
+# MANIPULATION AND CALCULATIONS
 aC=subset(ba,ba$treatment==0 & ba$ploidy==3)
 aE=subset(ba,ba$treatment==1 & ba$ploidy==3)
 sC=subset(ba,ba$treatment==0 & ba$ploidy==2)
@@ -499,18 +527,17 @@ freq=inf$mic/inf$total
 inf=cbind(inf,freq)
 
 # FIGURE 2A
-par(mar=c(4,4,4,4))
 par(las=1)
 par(lwd=2)
 par(col="gray20")
 boxplot(inf$freq~inf$ploidy*inf$treatment,
         ylim=c(0,1),ylab="", # ylab=proportion infected, with all females up in the corner
-        lwd=2,cex.axis=1.5,names=c("Sexual","Asexual","Sexual","Asexual"),
+        lwd=2,cex.axis=1,names=c("Sexual","Asexual","Sexual","Asexual"),
         xlab="",
-        col=c("#ca0020","#0571b0"),outcex=1.5)
+        col=c("#bdbdbd","#525252"),outcex=1.5)
 abline(v=2.5,lty=3)
-text(1.5,0.9,"Control",cex=2)
-text(3.5,0.9,"Exposed",cex=2)
+text(1.5,0.9,"Control",cex=1.5)
+text(3.5,0.9,"Exposed",cex=1.5)
 
 # SAMPLE SIZES
 trip<-inf[inf$ploidy==3,]
@@ -527,10 +554,40 @@ colnames(t4)=c("mean females sampled","se of mean")
 rownames(t4)=c("asexual","sexual")
 t4
 
+#FIGURE B3
+# FIGURE 2A
+par(tck=0.01)
+par(las=1)
+par(lwd=1)
+par(col="gray30")
+boxplot(inf$freq~inf$ploidy*inf$treatment*inf$year,
+        ylim=c(0,1),ylab="", # ylab=proportion infected, with all females up in the corner
+        lwd=1,cex.axis=1,
+        xlab="",xaxt="n",
+        col=c("#bdbdbd","#525252"),outcex=1.5)
+axis(1, at=seq(1,16,1), labels=FALSE)
+
+lab=c("Sexual","Asexual","Sexual","Asexual",
+      "Sexual","Asexual","Sexual","Asexual",
+      "Sexual","Asexual","Sexual","Asexual",
+      "Sexual","Asexual","Sexual","Asexual")
+text(x=seq(1,16,1), y=par()$usr[3]-0.03*(par()$usr[4]-par()$usr[3]),
+     labels=lab, srt=45, adj=1, xpd=TRUE,cex=1,col="black")
+
+abline(v=2.5,lty=3)
+abline(v=4.5)
+abline(v=6.5,lty=3)
+abline(v=8.5)
+abline(v=10.5,lty=3)
+abline(v=12.5)
+abline(v=14.5,lty=3)
+
 ```
-Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. quasi-GLM - proportion of offspring asexual in control and exposed mesocosms. Females, all years. Table S5A
+Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. quasi-GLM - proportion of offspring asexual in control and exposed mesocosms. Females, all years. Table B5A
 
 ```{r}
+
+# MANIPULATION AND CALCULATIONS 
 aC=subset(bb,bb$treatment==0 & bb$ploidy==3)
 aE=subset(bb,bb$treatment==1 & bb$ploidy==3)
 sC=subset(bb,bb$treatment==0 & bb$ploidy==2)
@@ -567,6 +624,7 @@ names(CT)=c("year","replicate","diploid","triploid","treatment")
 
 T=rbind(ET,CT)
 
+# STATISTICAL MODELS
 lrfit<-glm( cbind(triploid,diploid) ~ treatment*factor(year), 
             family = binomial,data=T)
 
@@ -575,23 +633,18 @@ sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/40 
 
 # quasi
-# TABLE S5A
+# TABLE B5A
 lrfitq<-glm( cbind(triploid,diploid) ~ treatment*factor(year), 
              family = quasibinomial,data=T)
 
+# testing treatment*year interaction
 lrfitq2<-glm( cbind(triploid,diploid) ~ treatment+factor(year), 
               family = quasibinomial,data=T)
 anova(lrfitq,lrfitq2,test="F")
 
-lrfitq3<-glm( cbind(triploid,diploid) ~ treatment, 
-              family = quasibinomial,data=T)
-anova(lrfitq2,lrfitq3,test="F")
-
-lrfitq4<-glm( cbind(triploid,diploid) ~ factor(year), 
-              family = quasibinomial,data=T)
-anova(lrfitq2,lrfitq4,test="F")
+anova(lrfitq2,test="F")
 ```
-Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. quasi-GLM - proportion of offspring asexual in control and exposed mesocosms. Females, 2013-2015 Table S5B
+Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. quasi-GLM - proportion of offspring asexual in control and exposed mesocosms. Females, 2013-2015 Table B5B
 
 ```{r}
 Tlat<-subset(T,T$year!=2012)
@@ -602,27 +655,25 @@ lrfit<-glm( cbind(triploid,diploid) ~ treatment*factor(year),
 sumsquare = sum(residuals(lrfit, type = "pearson")^2)
 sumsquare/30
 
-# quasibinomial
-# TABLE S5B
+# quasi
+# TABLE B5B
 lrfitq<-glm( cbind(triploid,diploid) ~ treatment*factor(year), 
              family = quasibinomial,data=Tlat)
+
+# testing interaction
 lrfitq2<-glm( cbind(triploid,diploid) ~ treatment+factor(year), 
               family = quasibinomial,data=Tlat)
 anova(lrfitq,lrfitq2,test="F")
 
-lrfitq3<-glm( cbind(triploid,diploid) ~ treatment, 
-              family = quasibinomial,data=Tlat)
-anova(lrfitq2,lrfitq3,test="F")
-
-lrfitq4<-glm( cbind(triploid,diploid) ~ factor(year), 
-              family = quasibinomial,data=Tlat)
-anova(lrfitq2,lrfitq4,test="F")
+anova(lrfitq2,test="F")
 ```
 
 Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. Calculations
 
 ```{r}
 # FREQUENCY OF ASEXUALS IN ADULTS 2012-2015
+
+# MANIPULATION AND CALCULATIONS
 # adults
 baba<-subset(bab,bab$cohort=="adult")
 # subset by ploidy and treatment
@@ -667,8 +718,8 @@ Tfadults=cbind(T,freq,sum)
 cohort=rep("adult",length(Tfadults$treatment))
 Tfadults=cbind(Tfadults,cohort)
 
-Tfa=mean(Tf$freq[1:48])
-Tfa_se=sd(Tf$freq[1:48])/sqrt(48)
+Tfa=mean(Tfadults$freq[1:48])
+Tfa_se=sd(Tfadults$freq[1:48])/sqrt(48)
 
 # SUMMARY FREQUENCY ASEXUALS IN ADULTS, 2012-2015
 t5<-rbind(Tfa,Tfa_se)
@@ -677,11 +728,11 @@ colnames(t5)=c("frequency of asexuals in adult generation")
 t5
 ```
 
-Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. Calculations
+Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2013-2015. Calculations - reported in Table B5B
 ```{r}
 # FREQUENCY OF ASEXUALS IN ADULTS 2013-2015
 
-###########2013-2015####################
+# MANIPULATIONS AND CALCULATIONS
 Tf2<-subset(Tfadults,Tfadults$year>2012)
 mean(Tf2$freq)
 sd(Tf2$freq)/sqrt(36)
@@ -691,7 +742,7 @@ sd<-sd(Tf2$freq)
 se<-sd/sqrt(length(Tf2$freq))
 
 # SUMMARY FREQUENCY ASEXUALS IN ADULTS, 2013-2015
-# TABLE S5B
+# TABLE B5B
 t6<-rbind(m,se)
 rownames(t6)=c("mean","se")
 colnames(t6)=c("frequency of asexuals in adult generation")
@@ -702,6 +753,8 @@ Paragraph 11 of the Results section. Comparison of asexual fitness in presence a
 
 ```{r}
 # FREQUENCY OF ASEXUALS IN OFFSPRING GENERATION 2012-2015
+
+# MANIPULATION AND CALCULATIONS
 #fraction asexual babies in control v exposed
 aC=subset(bb,bb$treatment==0 & bb$ploidy==3)
 aE=subset(bb,bb$treatment==1 & bb$ploidy==3)
@@ -752,10 +805,12 @@ colnames(t7)=c("mean frequency asexuals in offspring","se of mean")
 t7
 ```
 
-Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. Calculations
+Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2013-2015. Calculations - presented in Table B5B
 
 ```{r}
 # # FREQUENCY OF ASEXUALS IN OFFSPRING GENERATION 2013-2015
+
+# MANIPULATION AND CALCULATIONS
 Tf2<-subset(Tf,Tf$year>2012)
 
 m2<-tapply(Tf2$freq,list(Tf2$treatment),mean)
@@ -763,7 +818,7 @@ sd<-tapply(Tf2$freq,list(Tf2$treatment),sd)
 se<-sd/sqrt(length(Tf2$treatment)/2)
 
 # SUMMARY OF ASEXUAL FREQUENCY IN OFFSPRING, 2013-2015
-# TABLE S5B
+# TABLE B5B
 t8<-cbind(m2,se)
 colnames(t8)=c("mean frequency asexuals in offspring","se of mean")
 t8
@@ -774,6 +829,8 @@ Paragraph 11 of the Results section. Comparison of asexual fitness in presence a
 
 ```{r}
 # FOLD-CHANGE IN ASEXUAL FREQUENCY BY TREATMENT 2012-2015
+
+# MANIPULATION AND CALCULATIONS
 babb<-subset(bab,bab$cohort=="baby")
 aC=subset(babb,babb$treatment==0 & babb$ploidy==3)
 aE=subset(babb,babb$treatment==1 & babb$ploidy==3)
@@ -888,9 +945,11 @@ colnames(t9)=c("fold-change in asexual frequency","se of fold-change")
 t9
 ```
 
-Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. Calculations
+Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2013-2015. Calculations - presented in Table B5B
 ```{r}
-## FOLD-CHANGE IN ASEXUAL FREQUENCY BY TREATMENT 2013-2015
+# FOLD-CHANGE IN ASEXUAL FREQUENCY BY TREATMENT 2013-2015
+
+# MANIPULATION AND CALCULATIONS
 Tf2<-subset(Tf,Tf$year>2012)
 
 #means
@@ -911,7 +970,7 @@ foldE=TfbE/Tfa
 se_foldE=foldE*sqrt(((Tfa_se/Tfa)^2)+((TfbE_se/TfbE)^2))
 
 #SUMMARY FOLD-CHANGE IN ASEXUAL FREQUENCY 2013-2015
-# TABLE S5
+# TABLE B5B
 t10<-matrix(c(foldC,foldE,se_foldC,se_foldE),nrow=2)
 rownames(t10)=c("control","exposed")
 colnames(t10)=c("fold-change in asexual frequency","se of fold-change")
@@ -921,8 +980,9 @@ t10
 Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. Calculations - Methods section "Experimental test of parasite-mediated selection/Data collection""
 
 ```{r}
-#################
-# AMBIGUOUS DNA CONTENT - OFFSPRING
+# AMBIGUOUS DNA CONTENT 
+
+# MANIPULATION AND CALCULATIONS
 # OFFSPRING
 d<-subset(bb0,bb0$ploidy!="NA")
 l<-tapply(d$ploidy,list(d$year,d$tank),length)
@@ -952,9 +1012,12 @@ print("standard error of mean")
 sd(l2/l)/sqrt(48) # standard error of mean 
 ```
 
-Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. Figure 2B
+Paragraph 11 of the Results section. Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. Figures 2B & B4
 
 ```{r}
+# FIGURES 2B AND B4
+
+# MANIPULATION AND CALCULATIONS
 babb<-subset(bab,bab$cohort=="baby")
 # subset by ploidy and treatment
 aC=subset(babb,babb$treatment==0 & babb$ploidy==3)
@@ -1053,8 +1116,8 @@ par(lwd=2)
 par(col="gray20")
 boxplot(Tf$freq~Tf$treatment*Tf$cohort,
         ylim=c(0,1),
-        lwd=2,cex.axis=1.5,names=c("Control","Exposed","Control","Exposed"),
-        col=c("#bdbdbd","#636363"),outcex=1.5)
+        lwd=2,cex.axis=1,names=c("Control","Exposed","Control","Exposed"),
+        col=c("#f0f0f0","#969696"),outcex=1.5)
 abline(v=2.5,lty=3)
 
 # SAMPLE SIZES
@@ -1071,11 +1134,37 @@ t11<-matrix(c(m1,m2,se1,se2),nrow=2)
 colnames(t11)=c("mean number sampled","se of mean")
 rownames(t11)=c("adults","offspring")
 t11
+
+#FIGURE 4B
+par(las=1)
+par(lwd=1)
+par(col="gray30")
+par(tck=0.01)
+boxplot(Tf$freq~Tf$treatment*Tf$cohort*Tf$year,
+        ylim=c(0,1),
+        lwd=1,cex.axis=1,xaxt="n",
+        col=c("#f0f0f0","#969696"),outcex=1.5)
+
+axis(1, at=seq(1,16,1), labels=FALSE)
+
+lab=c(rep(c("Control","Exposed"),8))
+text(x=seq(1,16,1), y=par()$usr[3]-0.03*(par()$usr[4]-par()$usr[3]),
+     labels=lab, srt=45, adj=1, xpd=TRUE,cex=1,col="black")
+
+abline(v=2.5,lty=3)
+abline(v=4.5,lty=1)
+abline(v=6.5,lty=3)
+abline(v=8.5,lty=1)
+abline(v=10.5,lty=3)
+abline(v=12.5,lty=1)
+abline(v=14.5,lty=3)
 ```
 
 Paragraphs 12 and 13 of the Results section. Estimating the cost of sex in the presence and absence of parasite selection; 2012-2015. Prepping data for model fit
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
+
 babb<-subset(bab,bab$cohort=="baby")
 # subset by ploidy and treatment
 aC=subset(babb,babb$treatment==0 & babb$ploidy==3)
@@ -1166,11 +1255,13 @@ asex$treatment<-as.factor(asex$treatment)
 asex$rep<-as.factor(asex$rep)
 
 #sort by mpg (ascending) and cyl (descending)
+# DATASET
 asex <- asex[order(asex$treatment,asex$year),] 
 ```
 Paragraphs 12 and 13 of the Results section. Estimating the cost of sex in the presence and absence of parasite selection; 2012-2015. Model selection. Table 2
 
 ```{r}
+# MODEL SELECTION
 attach(asex)
 
 # model 1: No cost of sex
@@ -1293,6 +1384,7 @@ colnames(summary) = c("logL", "K","AICc","delta AIC","Akaike weights")
 rownames(summary)<-c("no cost","2-fold cost","optimized cost",
                      "cost by treatment")
 
+# TABLE 2
 summary
 
 detach(asex)
@@ -1300,6 +1392,7 @@ detach(asex)
 Paragraphs 12 and 13 of the Results section. Estimating the cost of sex in the presence and absence of parasite selection; 2012-2015. Model selection probabilities
 
 ```{r}
+# MODEL SELECTION PROBABILITIES
 attach(asex)
 
 m = 10000 
@@ -1352,6 +1445,8 @@ detach(asex)
 Paragraphs 12 and 13 of the Results section. Estimating the cost of sex in the presence and absence of parasite selection; 2012-2015. Parameter estimation.
 
 ```{r}
+# PARAMETER ESTIMATION - MODEL 3
+
 attach(asex)
 
 # model3
@@ -1383,6 +1478,8 @@ detach(asex)
 Paragraphs 12 and 13 of the Results section. Estimating the cost of sex in the presence and absence of parasite selection; 2012-2015. Parameter estimation.
 
 ```{r}
+# PARAMETER ESTIMATION - MODEL 4
+
 attach(asex)
 # model 4
 m = 10000
@@ -1419,9 +1516,11 @@ t13
 detach(asex)
 ```
 
-Experimental Results in the Appendix. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. GEE - Microphallus infection by sex and treatment; Table S8
+Experimental Results in the Appendix. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. GEE - Microphallus infection by sex and treatment; Table B8
 
 ```{r}
+# MANIPULATION AND CALCULATIONS
+
 # subset by sex and treatment
 fC=subset(bm2,bm2$treatment==0 & bm2$sex==0)
 fE=subset(bm2,bm2$treatment==1 & bm2$sex==0)
@@ -1498,22 +1597,23 @@ Em=cbind(Em,healthy,sex,treatment,tank)
 
 inf<-rbind(Cf,Cm,Ef,Em)
 
+# STATISTICAL MODEL
 geefit1<-geeglm( cbind(mic,healthy) ~ treatment+factor(year)+factor(sex)+
                    treatment*factor(year)+treatment*factor(sex)+factor(year)*factor(sex)+
                    treatment*factor(year)*factor(sex), 
                  family = binomial,data=inf,
                  id=tank,corstr="exchangeable")
-summary(geefit1)
 
-# TABLE S8
+# TABLE B8
 anova(geefit1,test="Wald")
 ```
 
-Experimental Results in the Appendix. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. Calculations
+Experimental Results in Appendix A. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. Calculations
 
 ```{r}
-#
 # INFECTION RATE WITH MICROPHALLUS IN CONTROL TANKS - MALES V. DIPLOID FEMALES
+
+# MANIPULATION ADN CALCULATIONS
 Cf<-subset(bm2,bm2$treatment==0 & bm2$sex==0)
 tCf=tapply(Cf$mic,list(Cf$replicate,Cf$year),length)
 mCf=tapply(Cf$mic,list(Cf$replicate,Cf$year),sum)
@@ -1534,10 +1634,12 @@ colnames(t14)<-c("mean","se of mean")
 t14
 ```
 
-Experimental Results in the Appendix. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. Calculations
+Experimental Results in Appendix A. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. Calculations
 
 ```{r}
 # INFECTION RATE WITH MICROPHALLUS IN EXPOSED TANKS - MALES V DIPLOID FEMALES
+
+# MANIPULATION AND CALCULATIONS
 Ef<-subset(bm2, bm2$treatment==1 &bm2$sex==0)
 tEf=tapply(Ef$mic,list(Ef$replicate,Ef$year),length)
 mEf=tapply(Ef$mic,list(Ef$replicate,Ef$year),sum)
@@ -1559,9 +1661,12 @@ t15
 
 ```
 
-Experimental Results in the Appendix. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. Figure S6
+Experimental Results in Appendix B. Comparison of sexual male and female infection rates in experimental exposures, 2012-2015. Figure B6
 
 ```{r}
+# FIGURE B6
+
+# MANIPULATION AND CALCULATIONS
 fC=subset(bm2,bm2$treatment==0 & bm2$sex==0)
 fE=subset(bm2,bm2$treatment==1 & bm2$sex==0)
 mC=subset(bm2,bm2$treatment==0 & bm2$sex==1)
@@ -1638,18 +1743,18 @@ inf<-rbind(Cf,Cm,Ef,Em)
 freq=inf$mic/inf$total
 inf=cbind(inf,freq)
 
-# FIGURE S6
+# FIGURE B6
 par(las=1)
 par(lwd=2)
 par(col="gray20")
 boxplot(inf$freq~inf$sex*inf$treatment,
         ylim=c(0,1),ylab="", # ylab=proportion infected, with all females up in the corner
-        lwd=2,cex.axis=1.5,names=c("diploid females","males","diploid females","males"),
+        lwd=2,cex.axis=1,names=c("diploid females","males","diploid females","males"),
         xlab="",outcex=1.5,
-        col=c("#ca0020","#f4a582"))
+        col=c("#bdbdbd","white"))
 abline(v=2.5,lty=3)
-text(1.5,0.9,"Control",cex=2)
-text(3.5,0.9,"Exposed",cex=2)
+text(1.5,0.9,"Control",cex=1)
+text(3.5,0.9,"Exposed",cex=1)
 
 # SAMPLE SIZE
 m<-subset(inf,inf$sex==1)
@@ -1666,10 +1771,12 @@ rownames(t16)<-c("mean individuals sampled","se")
 colnames(t16)<-c("males","diploid females")
 t16
 ```
-Experimental Results in the Appendix. Comparison of male frequency (sex ratio) in experimental mesocosms, 2012-2015.Paragraphs 8+9 of Appendix
+Experimental Results in Appendix A. Comparison of male frequency (sex ratio) in experimental mesocosms, 2012-2015.Paragraphs 8+9 of Appendix A
 
 ```{r}
 # FREQUENCIES OF ADULT MALES IN CONTROL AND EXPOSED TANKS
+
+# MANIPULATION AND CALCULATIONS
 # subset by treatment
 C=subset(bm2,bm2$treatment==0)
 E=subset(bm2,bm2$treatment==1)
@@ -1728,10 +1835,12 @@ t.test(cfreq,efreq,paired=TRUE)
 # non-parametric
 wilcox.test(cfreq,efreq,paired=TRUE)
 ```
-Experimental Results in the Appendix. Comparison of triploid frequency in experimental mesocosms, 2012-2015.Paragraphs 8+9 of Appendix
+Experimental Results in Appendix A. Comparison of triploid frequency in experimental mesocosms, 2012-2015.Paragraphs 8+9 of Appendix A
 
 ```{r}
 # FREQUENCIES OF ADULT FEMALES THAT WERE TRIPLOID IN CONTROL AND EXPOSED TANKS
+
+# MANIPULATION AND CALCULATIONS
 # subset by ploidy and treatment
 aC=subset(ba,ba$treatment==0 & ba$ploidy==3)
 aE=subset(ba,ba$treatment==1 & ba$ploidy==3)
@@ -1776,226 +1885,10 @@ mean(efreq3)
 
 ad.test(cfreq3)
 ad.test(efreq3)
-t.test(cfreq3,efreq3,paired=T) 
+t.test(cfreq3,efreq3,paired=TRUE) 
 wilcox.test(cfreq3,efreq3,paired=TRUE) 
 ```
 
-Experimental Results in the Appendix.Comparison of parasite infectivity against local sexual and asexual snails; 2012-2015. By year. Figure S3
+Experimental Results in the Appendix.Figures B3 and B4: see chunks for Figures 2A and 2B, respectively
 
-```{r}
-aC=subset(ba,ba$treatment==0 & ba$ploidy==3)
-aE=subset(ba,ba$treatment==1 & ba$ploidy==3)
-sC=subset(ba,ba$treatment==0 & ba$ploidy==2)
-sE=subset(ba,ba$treatment==1 & ba$ploidy==2)
-
-# now divide each subset by tank and year
-# control asexuals
-aCT=tapply(aC$mic,list(aC$year,aC$replicate),length)
-LaCT=melt(aCT)
-names(LaCT)=c("year","replicate","total")
-
-aCM=tapply(aC$mic,list(aC$year,aC$replicate),sum)
-LaCM=melt(aCM)
-names(LaCM)=c("year","replicate","mic")
-
-Ca<-cbind(LaCT,LaCM$mic)
-names(Ca)=c("year","replicate","total","mic")
-healthy=Ca$total-Ca$mic
-ploidy=rep(3,length(Ca$year))
-treatment=rep("control",length(Ca$year))
-Ca=cbind(Ca,healthy,ploidy,treatment)
-
-# exposed asexuals
-aET=tapply(aE$mic,list(aE$year,aE$replicate),length)
-LaET=melt(aET)
-names(LaET)=c("year","replicate","total")
-
-aEM=tapply(aE$mic,list(aE$year,aE$replicate),sum)
-LaEM=melt(aEM)
-names(LaEM)=c("year","replicate","mic")
-
-Ea<-cbind(LaET,LaEM$mic)
-names(Ea)=c("year","replicate","total","mic")
-healthy=Ea$total-Ea$mic
-ploidy=rep(3,length(Ea$year))
-treatment=rep("exposed",length(Ea$year))
-Ea=cbind(Ea,healthy,ploidy,treatment)
-
-# control sexuals
-sCT=tapply(sC$mic,list(sC$year,sC$replicate),length)
-LsCT=melt(sCT)
-names(LsCT)=c("year","replicate","total")
-
-sCM=tapply(sC$mic,list(sC$year,sC$replicate),sum)
-LsCM=melt(sCM)
-names(LsCM)=c("year","replicate","mic")
-
-Cs<-cbind(LsCT,LsCM$mic)
-names(Cs)=c("year","replicate","total","mic")
-healthy=Cs$total-Cs$mic
-ploidy=rep(2,length(Cs$year))
-treatment=rep("control",length(Cs$year))
-Cs=cbind(Cs,healthy,ploidy,treatment)
-
-# exposed sexuals
-sET=tapply(sE$mic,list(sE$year,sE$replicate),length)
-LsET=melt(sET)
-names(LsET)=c("year","replicate","total")
-
-sEM=tapply(sE$mic,list(sE$year,sE$replicate),sum)
-LsEM=melt(sEM)
-names(LsEM)=c("year","replicate","mic")
-
-Es<-cbind(LsET,LsEM$mic)
-names(Es)=c("year","replicate","total","mic")
-healthy=Es$total-Es$mic
-ploidy=rep(2,length(Es$year))
-treatment=rep("exposed",length(Es$year))
-Es=cbind(Es,healthy,ploidy,treatment)
-
-# now bring them all together
-inf<-rbind(Ca,Cs,Ea,Es)
-freq=inf$mic/inf$total
-inf=cbind(inf,freq)
-
-# FIGURE S3
-par(mar=c(4,4,4,4))
-par(las=1)
-par(lwd=2)
-par(col="gray20")
-boxplot(inf$freq~inf$ploidy*inf$treatment*inf$year,
-        ylim=c(0,1),ylab="", # ylab=proportion infected, with all females up in the corner
-        lwd=2,cex.axis=1.5,names=c("Sexual","Asexual","Sexual","Asexual",
-                                   "Sexual","Asexual","Sexual","Asexual",
-                                   "Sexual","Asexual","Sexual","Asexual",
-                                   "Sexual","Asexual","Sexual","Asexual"),
-        xlab="",
-        col=c("#ca0020","#0571b0"),outcex=1.5)
-abline(v=2.5,lty=3)
-abline(v=4.5)
-abline(v=6.5,lty=3)
-abline(v=8.5)
-abline(v=10.5,lty=3)
-abline(v=12.5)
-abline(v=14.5,lty=3)
-
-# SAMPLE SIZES GIVEN IN FIGURE 2A
-```
-
-Experimental Results in the Appendix.  Comparison of asexual fitness in presence and absence of parasite selection; 2012-2015. By year. Figure 2B
-
-```{r}
-#babies
-babb<-subset(bab,bab$cohort=="baby")
-
-aC=subset(babb,babb$treatment==0 & babb$ploidy==3)
-aE=subset(babb,babb$treatment==1 & babb$ploidy==3)
-sC=subset(babb,babb$treatment==0 & babb$ploidy==2)
-sE=subset(babb,babb$treatment==1 & babb$ploidy==2)
-
-# control triploids first
-aCT=tapply(aC$ploidy,list(aC$year,aC$replicate),length)
-LaCT=melt(aCT)
-names(LaCT)=c("year","replicate","triploid")
-
-# exposed triploids
-aET=tapply(aE$ploidy,list(aE$year,aE$replicate),length)
-LaET=melt(aET)
-names(LaET)=c("year","replicate","triploid")
-
-# control diiploids
-sCT=tapply(sC$ploidy,list(sC$year,sC$replicate),length)
-LsCT=melt(sCT)
-names(LsCT)=c("year","replicate","diploid")
-
-# exposed diploids
-sET=tapply(sE$ploidy,list(sE$year,sE$replicate),length)
-LsET=melt(sET)
-names(LsET)=c("year","replicate","diploid")
-
-#merge them
-treatment=rep("exposed",length(LaET$triploid))
-ET=cbind(LsET,LaET$triploid,treatment)
-names(ET)=c("year","replicate","diploid","triploid","treatment")
-
-treatment=rep("control",length(LaCT$triploid))
-CT=cbind(LsCT,LaCT$triploid,treatment)
-names(CT)=c("year","replicate","diploid","triploid","treatment")
-
-T=rbind(ET,CT)
-freq=T$triploid/(T$triploid+T$diploid)
-sum=T$triploid+T$diploid
-Tfbabies=cbind(T,freq,sum)
-cohort=rep("baby",length(Tfbabies$treatment))
-Tfbabies=cbind(Tfbabies,cohort)
-
-# adults
-baba<-subset(bab,bab$cohort=="adult")
-# subset by ploidy and treatment
-aC=subset(baba,baba$treatment==0 & baba$ploidy==3)
-aE=subset(baba,baba$treatment==1 & baba$ploidy==3)
-sC=subset(baba,baba$treatment==0 & baba$ploidy==2)
-sE=subset(baba,baba$treatment==1 & baba$ploidy==2)
-
-# control triploids first
-aCT=tapply(aC$ploidy,list(aC$year,aC$replicate),length)
-LaCT=melt(aCT)
-names(LaCT)=c("year","replicate","triploid")
-
-# exposed triploids
-aET=tapply(aE$ploidy,list(aE$year,aE$replicate),length)
-LaET=melt(aET)
-names(LaET)=c("year","replicate","triploid")
-
-# control diiploids
-sCT=tapply(sC$ploidy,list(sC$year,sC$replicate),length)
-LsCT=melt(sCT)
-names(LsCT)=c("year","replicate","diploid")
-
-# exposed diploids
-sET=tapply(sE$ploidy,list(sE$year,sE$replicate),length)
-LsET=melt(sET)
-names(LsET)=c("year","replicate","diploid")
-
-#merge them
-treatment=rep("exposed",length(LaET$triploid))
-ET=cbind(LsET,LaET$triploid,treatment)
-names(ET)=c("year","replicate","diploid","triploid","treatment")
-
-treatment=rep("control",length(LaCT$triploid))
-CT=cbind(LsCT,LaCT$triploid,treatment)
-names(CT)=c("year","replicate","diploid","triploid","treatment")
-
-T=rbind(ET,CT)
-freq=T$triploid/(T$triploid+T$diploid)
-sum=T$triploid+T$diploid
-Tfadults=cbind(T,freq,sum)
-cohort=rep("adult",length(Tfadults$treatment))
-Tfadults=cbind(Tfadults,cohort)
-
-Tf=rbind(Tfadults,Tfbabies)
-Tf$treatment<-factor(Tf$treatment, levels=c("control","exposed"))
-Tfadults$treatment<-factor(Tfadults$treatment, levels=c("control","exposed"))
-Tfbabies$treatment<-factor(Tfbabies$treatment, levels=c("control","exposed"))
-
-# FIGURE S4
-par(las=1)
-par(lwd=2)
-par(col="gray20")
-boxplot(Tf$freq~Tf$treatment*Tf$cohort*Tf$year,
-        ylim=c(0,1),
-        lwd=2,cex.axis=1.5,names=rep(c("Control","Exposed"),8),
-        col=c("#bdbdbd","#636363"),outcex=1.5)
-abline(v=2.5,lty=3)
-abline(v=4.5,lty=1)
-abline(v=6.5,lty=3)
-abline(v=8.5,lty=1)
-abline(v=10.5,lty=3)
-abline(v=12.5,lty=1)
-abline(v=14.5,lty=3)
-
-# SAMPLE SIZES GIVEN IN FIGURE 2B
-
-
-```
 
