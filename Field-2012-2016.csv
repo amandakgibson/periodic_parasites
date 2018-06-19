@@ -1,4 +1,4 @@
-period,collection,year,site,id,length,sex,mic,ploidy,castrated
+period,collector,year,site,id,length,sex,mic,ploidy,castrated
 1,AKG,2013,swamp,A_1,5.1,0,0,2,0
 1,AKG,2013,swamp,A_2,4.8,0,1,3,1
 1,AKG,2013,swamp,A_3,4.8,0,1,2,1

@@ -1,4 +1,4 @@
-period,collection,year,site,id,length,sex,mic,ploidy,castrated
+period,collector,year,site,id,length,sex,mic,ploidy,castrated
 0,DV,2001,camp,1,,0,1,2,
 0,DV,2001,camp,2,,1,0,2,
 0,DV,2001,camp,8,,0,1,2,
